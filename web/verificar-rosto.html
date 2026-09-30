@@ -48,10 +48,16 @@
             <p class="face-empty" data-face-empty>Você ainda não cadastrou nenhum rosto.</p>
           </div>
           <button type="button" class="btn btn-outline btn-block" data-abrir-cadastro style="margin-top:1rem;">+ Cadastrar um novo rosto</button>
+          <div class="face-list-actions">
+            <button type="button" class="btn btn-outline" data-exportar-rostos>Exportar cadastro</button>
+            <label class="btn btn-outline" for="file-input-importar" style="cursor:pointer;">Importar cadastro</label>
+            <input id="file-input-importar" type="file" accept="application/json" data-file-input-importar hidden>
+          </div>
+          <p class="verify-hint" data-status-exportar hidden></p>
         </div>
 
         <div class="verify-card" data-painel-cadastro hidden>
-          <h2 class="face-section-title">Cadastrar rosto de confiança</h2>
+          <h2 class="face-section-title" data-cadastro-titulo>Cadastrar rosto de confiança</h2>
 
           <div class="verify-tabs">
             <button type="button" class="verify-tab active" data-cadastro-tab="camera"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px; margin-right:3px;"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>Usar câmera</button>
@@ -154,5 +160,7 @@
 <script src="js/verificarRosto.js"></script>
 <script src="js/changelog-data.js"></script>
 <script src="js/changelog.js"></script>
+<script src="js/siteTour.js"></script>
+<script src="js/acessibilidade.js"></script>
 </body>
 </html>

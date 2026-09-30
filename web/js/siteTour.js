@@ -24,6 +24,11 @@
       { selector: '[data-upload-area]', title: 'Enviar o print', text: 'Clique aqui pra escolher uma imagem do seu celular ou computador, ou arraste o arquivo pra essa área.' },
       { selector: '[data-analisar-btn]', title: 'Analisar', text: 'Depois de escolher a imagem ou colar o texto, clique aqui. A leitura acontece no seu aparelho, a imagem não é enviada pra nenhum lugar.' },
     ],
+    'verificar-rosto': [
+      { selector: '.face-disclaimer', title: 'Um apoio, não uma prova', text: 'A comparação de rosto pode errar. Nunca use só isso pra decidir - sempre confirme também por outro meio.' },
+      { selector: '[data-abrir-cadastro]', title: 'Cadastre uma pessoa de confiança', text: 'Antes de verificar, cadastre o rosto de alguém que você confia (um filho, uma filha, um amigo), pela câmera ou enviando uma foto.' },
+      { selector: '[data-abrir-verificacao]', title: 'Comparar na hora', text: 'Numa videochamada estranha, clique aqui pra comparar o rosto da pessoa com quem você já cadastrou.' },
+    ],
   };
 
   const CLOSE_ICON = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>';

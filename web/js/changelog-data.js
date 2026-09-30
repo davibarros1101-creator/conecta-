@@ -6,6 +6,12 @@
  */
 const CHANGELOG = [
   {
+    version: 'v12',
+    date: '2026-09-30',
+    title: '5 melhorias: texto maior, múltiplas fotos, editar nome, exportar e tour',
+    description: 'Botão "A+" (canto inferior direito, em todas as páginas) aumenta o texto e o contraste. No Verificar rosto: dá pra cadastrar mais de uma foto da mesma pessoa (melhora a precisão), editar o nome de quem já foi cadastrado, exportar/importar o cadastro de rostos (arquivo fica só com você, contém dados biométricos), e agora também tem tour guiado nessa página.',
+  },
+  {
     version: 'v11',
     date: '2026-09-30',
     title: 'Botão "Tirar foto" no Verificar rosto',

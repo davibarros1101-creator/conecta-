@@ -26,7 +26,11 @@
   const faceEmptyEl = document.querySelector('[data-face-empty]');
 
   const abrirCadastroBtn = document.querySelector('[data-abrir-cadastro]');
+  const exportarBtn = document.querySelector('[data-exportar-rostos]');
+  const fileInputImportar = document.querySelector('[data-file-input-importar]');
+  const statusExportarEl = document.querySelector('[data-status-exportar]');
   const painelCadastro = document.querySelector('[data-painel-cadastro]');
+  const cadastroTituloEl = document.querySelector('[data-cadastro-titulo]');
   const videoCadastro = document.querySelector('[data-video-cadastro]');
   const fotoTiradaCadastroImg = document.querySelector('[data-foto-tirada-cadastro]');
   const tirarFotoCadastroBtn = document.querySelector('[data-tirar-foto-cadastro]');
@@ -64,6 +68,7 @@
   const ICON_CHECK = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>';
   const ICON_ALERT = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>';
   const ICON_TRASH = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+  const ICON_EDIT = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
 
   function esc(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -75,8 +80,20 @@
     el.innerHTML = html;
   }
 
+  // Um rosto pode ter mais de uma foto cadastrada (mais ângulos/luzes =
+  // comparação mais precisa). Cadastros antigos salvos só com "descriptor"
+  // (singular) são migrados pra "descriptors" (plural) na leitura, sem
+  // precisar apagar o que a pessoa já tinha cadastrado.
+  function normalizarRosto(r) {
+    if (r.descriptors) return r;
+    return { ...r, descriptors: r.descriptor ? [r.descriptor] : [] };
+  }
+
   function lerRostos() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
+    try {
+      const lista = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      return lista.map(normalizarRosto);
+    } catch { return []; }
   }
   function salvarRostos(lista) {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(lista)); } catch { /* sem storage, segue sem salvar */ }
@@ -89,18 +106,69 @@
     rostos.forEach((r) => {
       const card = document.createElement('div');
       card.className = 'face-card';
+      const fotosTexto = r.descriptors.length > 1 ? `${r.descriptors.length} fotos` : '';
       card.innerHTML = `
+        <div class="face-card__acoes">
+          <button type="button" class="face-card__editar" data-editar-id="${esc(r.id)}" aria-label="Editar nome de ${esc(r.nome)}">${ICON_EDIT}</button>
+          <button type="button" class="face-card__excluir" data-excluir-id="${esc(r.id)}" aria-label="Remover ${esc(r.nome)}">${ICON_TRASH}</button>
+        </div>
         <img src="${r.foto}" alt="${esc(r.nome)}">
-        <span class="face-card__nome">${esc(r.nome)}</span>
-        <button type="button" class="face-card__excluir" data-excluir-id="${esc(r.id)}" aria-label="Remover ${esc(r.nome)}">${ICON_TRASH}</button>
+        <span class="face-card__nome" data-nome-texto="${esc(r.id)}" title="Clique para editar o nome">${esc(r.nome)}</span>
+        <span class="face-card__fotos">${fotosTexto}</span>
+        <button type="button" class="face-card__add-foto" data-add-foto-id="${esc(r.id)}">+ Adicionar foto</button>
       `;
       faceListEl.appendChild(card);
     });
+
     faceListEl.querySelectorAll('[data-excluir-id]').forEach((btn) => {
       btn.addEventListener('click', () => {
         const id = btn.dataset.excluirId;
         salvarRostos(lerRostos().filter((r) => r.id !== id));
         renderFaceList();
+      });
+    });
+
+    function iniciarEdicaoNome(span) {
+      const id = span.dataset.nomeTexto;
+      const nomeAtual = span.textContent;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'face-card__nome-input';
+      input.value = nomeAtual;
+      input.maxLength = 40;
+      span.replaceWith(input);
+      input.focus();
+      input.select();
+
+      function salvarNovoNome() {
+        const novoNome = input.value.trim() || nomeAtual;
+        const rostos = lerRostos();
+        const rosto = rostos.find((r) => r.id === id);
+        if (rosto) rosto.nome = novoNome;
+        salvarRostos(rostos);
+        renderFaceList();
+      }
+      input.addEventListener('blur', salvarNovoNome);
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') input.blur();
+        if (e.key === 'Escape') { input.value = nomeAtual; input.blur(); }
+      });
+    }
+    faceListEl.querySelectorAll('[data-editar-id]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const span = faceListEl.querySelector(`[data-nome-texto="${CSS.escape(btn.dataset.editarId)}"]`);
+        if (span) iniciarEdicaoNome(span);
+      });
+    });
+    faceListEl.querySelectorAll('[data-nome-texto]').forEach((span) => {
+      span.addEventListener('click', () => iniciarEdicaoNome(span));
+    });
+
+    faceListEl.querySelectorAll('[data-add-foto-id]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.addFotoId;
+        const rosto = lerRostos().find((r) => r.id === id);
+        if (rosto) abrirCadastro(rosto);
       });
     });
   }
@@ -114,6 +182,7 @@
   let arquivoVerificar = null;
   let fotoCameraCadastro = null; // canvas com o quadro congelado, ou null
   let fotoCameraVerificar = null;
+  let pessoaParaAdicionarFoto = null; // rosto existente, quando o cadastro é "adicionar mais uma foto" em vez de criar pessoa nova
 
   async function ligarCamera(videoEl) {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -317,9 +386,22 @@
   });
 
   // --- Fluxo de cadastro ------------------------------------------------
-  abrirCadastroBtn.addEventListener('click', async () => {
+  // rostoExistente: quando informado, o painel abre no modo "adicionar mais
+  // uma foto" pra essa pessoa, em vez de criar um cadastro novo.
+  async function abrirCadastro(rostoExistente) {
+    pessoaParaAdicionarFoto = rostoExistente || null;
     painelCadastro.hidden = false;
-    nomeInput.value = '';
+    if (pessoaParaAdicionarFoto) {
+      cadastroTituloEl.textContent = `Adicionar foto de ${pessoaParaAdicionarFoto.nome}`;
+      nomeInput.value = pessoaParaAdicionarFoto.nome;
+      nomeInput.readOnly = true;
+      capturarBtn.textContent = 'Adicionar foto';
+    } else {
+      cadastroTituloEl.textContent = 'Cadastrar rosto de confiança';
+      nomeInput.value = '';
+      nomeInput.readOnly = false;
+      capturarBtn.textContent = 'Salvar';
+    }
     setStatus(statusCadastroEl, null);
     abaCadastro = 'camera';
     cadastroTabs.forEach((t) => t.classList.toggle('active', t.dataset.cadastroTab === 'camera'));
@@ -330,7 +412,8 @@
     } catch (err) {
       setStatus(statusCadastroEl, `<span>${mensagemErroCamera(err)}</span>`);
     }
-  });
+  }
+  abrirCadastroBtn.addEventListener('click', () => abrirCadastro(null));
 
   function fecharCadastro() {
     painelCadastro.hidden = true;
@@ -338,6 +421,8 @@
     streamCadastro = null;
     fotoCameraCadastro = null;
     arquivoCadastro = null;
+    pessoaParaAdicionarFoto = null;
+    nomeInput.readOnly = false;
     previewWrapCadastro.hidden = true;
     fileInputCadastro.value = '';
   }
@@ -367,11 +452,16 @@
         setStatus(statusCadastroEl, '<span>Não conseguimos identificar um rosto nessa ' + (usandoCamera ? 'foto. Tire outra com boa iluminação e o rosto de frente.' : 'foto. Tente uma com o rosto mais visível e de frente.') + '</span>');
         return;
       }
-      const largura = usandoCamera ? fotoCameraCadastro.width : previewCadastro.naturalWidth;
-      const altura = usandoCamera ? fotoCameraCadastro.height : previewCadastro.naturalHeight;
-      const foto = gerarThumbnail(fonte, largura, altura);
       const rostos = lerRostos();
-      rostos.push({ id: `${Date.now()}`, nome, descriptor: Array.from(det.descriptor), foto });
+      if (pessoaParaAdicionarFoto) {
+        const rosto = rostos.find((r) => r.id === pessoaParaAdicionarFoto.id);
+        if (rosto) rosto.descriptors.push(Array.from(det.descriptor));
+      } else {
+        const largura = usandoCamera ? fotoCameraCadastro.width : previewCadastro.naturalWidth;
+        const altura = usandoCamera ? fotoCameraCadastro.height : previewCadastro.naturalHeight;
+        const foto = gerarThumbnail(fonte, largura, altura);
+        rostos.push({ id: `${Date.now()}`, nome, descriptors: [Array.from(det.descriptor)], foto });
+      }
       salvarRostos(rostos);
       renderFaceList();
       setStatus(statusCadastroEl, null);
@@ -462,11 +552,15 @@
       let melhor = null;
       let melhorDistancia = Infinity;
       rostos.forEach((r) => {
-        const distancia = faceapi.euclideanDistance(det.descriptor, new Float32Array(r.descriptor));
-        if (distancia < melhorDistancia) {
-          melhorDistancia = distancia;
-          melhor = r;
-        }
+        // Com mais de uma foto cadastrada pra mesma pessoa, usa a menor
+        // distância entre todas elas (basta bater com uma foto/ângulo).
+        r.descriptors.forEach((descriptorSalvo) => {
+          const distancia = faceapi.euclideanDistance(det.descriptor, new Float32Array(descriptorSalvo));
+          if (distancia < melhorDistancia) {
+            melhorDistancia = distancia;
+            melhor = r;
+          }
+        });
       });
       setStatus(statusVerificacaoEl, null);
       renderResultadoComparacao(melhor, melhorDistancia);
@@ -474,6 +568,48 @@
       setStatus(statusVerificacaoEl, `<span>Não foi possível comparar agora (${esc(err.message || 'erro desconhecido')}).</span>`);
     } finally {
       compararBtn.disabled = false;
+    }
+  });
+
+  // --- Exportar / importar cadastro ------------------------------------------------
+  exportarBtn.addEventListener('click', () => {
+    const rostos = lerRostos();
+    if (!rostos.length) {
+      setStatus(statusExportarEl, '<span>Você ainda não cadastrou nenhum rosto pra exportar.</span>');
+      return;
+    }
+    const blob = new Blob([JSON.stringify(rostos, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'conecta-mais-rostos-confianca.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    setStatus(statusExportarEl, '<span>Arquivo baixado. Ele contém dados de rosto (biométricos) - guarde com cuidado e não envie pra estranhos.</span>');
+  });
+
+  fileInputImportar.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    fileInputImportar.value = '';
+    if (!file) return;
+    try {
+      const texto = await file.text();
+      const dados = JSON.parse(texto);
+      if (!Array.isArray(dados)) throw new Error('Formato inválido');
+      const validos = dados
+        .map(normalizarRosto)
+        .filter((r) => r && r.nome && Array.isArray(r.descriptors) && r.descriptors.length && r.foto);
+      if (!validos.length) throw new Error('Nenhum rosto válido encontrado no arquivo');
+      // IDs novos pra não colidir com o que já existe salvo neste navegador.
+      const comNovosIds = validos.map((r, i) => ({ ...r, id: `${Date.now()}-${i}` }));
+      const rostos = lerRostos().concat(comNovosIds);
+      salvarRostos(rostos);
+      renderFaceList();
+      setStatus(statusExportarEl, `<span>${comNovosIds.length} rosto(s) importado(s) com sucesso.</span>`);
+    } catch (err) {
+      setStatus(statusExportarEl, `<span>Não foi possível importar esse arquivo (${esc(err.message || 'formato inválido')}).</span>`);
     }
   });
 
