@@ -1,0 +1,50 @@
+/**
+ * Novidades do Conecta+, escritas pra quem usa o site (não é um log
+ * técnico) - aparecem no painel "Novidades" e no aviso de atualização.
+ * Atualizado manualmente a cada mudança real publicada. A entrada mais
+ * nova fica no topo.
+ */
+const CHANGELOG = [
+  {
+    version: 'v7',
+    date: '2026-09-30',
+    title: 'Detector reconhece mais um tipo de golpe comum',
+    description: 'Adicionado reconhecimento do golpe "meu banco não está funcionando, paga por mim que eu devolvo depois" (muito comum em conversas de WhatsApp). O verificador agora também diferencia sinais fortes (que sozinhos já geram alerta) de sinais fracos (que só contam combinados), deixando as respostas mais precisas.',
+  },
+  {
+    version: 'v6',
+    date: '2026-09-30',
+    title: 'Verificador não confunde mais contas reais com golpe',
+    description: 'Corrigido: uma conta de água, luz ou qualquer boleto de verdade não é mais marcado como suspeito só por mencionar "pagamento". Agora o Conecta+ reconhece campos de conta oficial (código de barras, linha digitável, CNPJ, vencimento) e avisa quando parece um documento legítimo.',
+  },
+  {
+    version: 'v5',
+    date: '2026-09-30',
+    title: 'Leitura em voz alta e gráfico de progresso',
+    description: 'Agora tem um botão pra ouvir cada mensagem de prática em voz alta, e uma página nova "Meu progresso" mostrando um gráfico de como sua pontuação evoluiu ao longo das tentativas.',
+  },
+  {
+    version: 'v4',
+    date: '2026-09-30',
+    title: 'Tour guiado em todas as páginas',
+    description: 'Agora tem um botão de tour (ícone de bússola, canto inferior esquerdo) que explica cada parte da página, passo a passo - na página inicial, na prática e na verificação de mensagem.',
+  },
+  {
+    version: 'v3',
+    date: '2026-09-30',
+    title: 'Verificar mensagem com leitura automática de print',
+    description: 'Agora dá pra enviar um print (foto de tela) do WhatsApp, e-mail ou SMS, ou colar o texto direto, e o Conecta+ lê e aponta os sinais de golpe na hora - inclusive se a mensagem parece spam.',
+  },
+  {
+    version: 'v2',
+    date: '2026-09-30',
+    title: 'Conecta+ pode ser instalado como aplicativo',
+    description: 'Em navegadores compatíveis, aparece um botão "Instalar app" que coloca o Conecta+ na tela inicial do celular ou computador, como um aplicativo de verdade.',
+  },
+  {
+    version: 'v1',
+    date: '2026-09-30',
+    title: 'Lançamento do Conecta+',
+    description: 'Primeira versão: 12 situações de prática pra aprender a reconhecer golpes digitais comuns, com explicação de cada uma e acompanhamento do seu progresso.',
+  },
+];
