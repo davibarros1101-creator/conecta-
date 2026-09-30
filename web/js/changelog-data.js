@@ -6,6 +6,12 @@
  */
 const CHANGELOG = [
   {
+    version: 'v14',
+    date: '2026-09-30',
+    title: 'Corrigido: botões invisíveis na página Verificar rosto',
+    description: 'O botão "+ Cadastrar um novo rosto" e outros 6 botões dessa página estavam com uma cor errada, ficando brancos em cima de um fundo branco - praticamente invisíveis, mesmo funcionando ao clicar. Corrigido para todos aparecerem com texto e borda escuros, bem visíveis.',
+  },
+  {
     version: 'v13',
     date: '2026-09-30',
     title: 'Página de privacidade e aviso sobre extensões',
