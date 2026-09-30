@@ -6,6 +6,12 @@
  */
 const CHANGELOG = [
   {
+    version: 'v13',
+    date: '2026-09-30',
+    title: 'Página de privacidade e aviso sobre extensões',
+    description: 'Nova página "Política de privacidade" (link no rodapé) explicando em linguagem simples o que fica guardado, onde, e como apagar - incluindo os dados de rosto cadastrados. Também foi adicionado um aviso na página Verificar rosto explicando que extensões de leitura/tradução do navegador podem esconder os botões, com dicas de como resolver.',
+  },
+  {
     version: 'v12',
     date: '2026-09-30',
     title: '5 melhorias: texto maior, múltiplas fotos, editar nome, exportar e tour',
