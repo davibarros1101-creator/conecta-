@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verificar rosto | Conecta+</title>
+<meta name="description" content="Compare pela webcam o rosto de uma chamada de vídeo com uma pessoa de confiança que você já cadastrou.">
+<link rel="icon" href="assets/icon-128.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a0e1a">
+<link rel="stylesheet" href="css/style.css">
+<!-- face-api.js: detecta e compara rostos direto no navegador. A imagem da
+     webcam e os rostos cadastrados nunca saem do computador da pessoa. -->
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+</head>
+<body data-tour-page="verificar-rosto">
+
+<header class="hero" style="padding-bottom:2.5rem;">
+  <div class="container">
+    <a href="index.html" style="display:inline-block; margin-bottom:1rem;">
+      <img class="hero__logo" src="assets/icon-192.png" alt="Conecta+" style="width:64px; height:64px; margin:0 auto 0.8rem;">
+    </a>
+    <h1 class="hero__brand" style="font-size:clamp(1.8rem,5vw,2.4rem);">Verificar rosto</h1>
+    <p class="hero__desc" style="margin-bottom:0;">Numa videochamada, compare o rosto da pessoa com uma foto de alguém de confiança que você já cadastrou antes. Tudo roda no seu computador, nenhuma foto é enviada para lugar nenhum.</p>
+  </div>
+</header>
+
+<main>
+  <section class="section">
+    <div class="container" style="max-width:680px;">
+
+      <div class="verify-card" data-aviso-privacidade>
+        <p class="face-disclaimer">
+          <strong>Isso é um apoio, não uma prova.</strong> A comparação de rosto pode errar, principalmente com pouca luz ou câmera de baixa qualidade. Nunca use só isso para decidir - se a pessoa está pedindo dinheiro ou informação urgente, sempre confirme também ligando pro número que você já conhece dela.
+        </p>
+      </div>
+
+      <div class="verify-card" data-status-modelo>
+        <div class="spinner"></div>
+        <span>Carregando o reconhecimento de rosto (só na primeira vez, pode levar um tempinho)…</span>
+      </div>
+
+      <div data-conteudo hidden>
+
+        <div class="verify-card">
+          <h2 class="face-section-title">1. Pessoas de confiança cadastradas</h2>
+          <div class="face-list" data-face-list>
+            <p class="face-empty" data-face-empty>Você ainda não cadastrou nenhum rosto.</p>
+          </div>
+          <button type="button" class="btn btn-outline btn-block" data-abrir-cadastro style="margin-top:1rem;">+ Cadastrar um novo rosto</button>
+        </div>
+
+        <div class="verify-card" data-painel-cadastro hidden>
+          <h2 class="face-section-title">Cadastrar rosto de confiança</h2>
+          <p class="verify-hint" style="margin-top:0;">Peça pra pessoa (ou use uma foto/vídeo em que o rosto dela apareça bem) olhar pra câmera com boa luz.</p>
+          <div class="webcam-box">
+            <video data-video-cadastro autoplay muted playsinline></video>
+            <canvas data-canvas-cadastro hidden></canvas>
+          </div>
+          <div data-status-cadastro class="verify-status" hidden></div>
+          <input type="text" data-nome-input placeholder="Nome da pessoa (ex: minha filha Ana)" class="face-nome-input" maxlength="40">
+          <div class="face-actions">
+            <button type="button" class="btn btn-primary" data-capturar-btn>Capturar e salvar</button>
+            <button type="button" class="btn btn-outline" data-cancelar-cadastro>Cancelar</button>
+          </div>
+        </div>
+
+        <div class="verify-card">
+          <h2 class="face-section-title">2. Verificar agora</h2>
+          <p class="verify-hint" style="margin-top:0;">Aponte a câmera para o rosto da pessoa na chamada (ou tire uma foto da tela) e compare com quem está cadastrado.</p>
+          <button type="button" class="btn btn-primary btn-block" data-abrir-verificacao>Ligar câmera e comparar</button>
+
+          <div data-painel-verificacao hidden style="margin-top:1rem;">
+            <div class="webcam-box">
+              <video data-video-verificar autoplay muted playsinline></video>
+              <canvas data-canvas-verificar hidden></canvas>
+            </div>
+            <div class="face-actions">
+              <button type="button" class="btn btn-primary" data-comparar-btn>Comparar agora</button>
+              <button type="button" class="btn btn-outline" data-fechar-verificacao>Fechar câmera</button>
+            </div>
+          </div>
+
+          <div data-status-verificacao class="verify-status" hidden></div>
+          <div data-resultado-verificacao hidden></div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <strong>Conecta+</strong> · Pessoas reais. Conexões seguras.<br>
+    Os rostos cadastrados ficam salvos só neste navegador, nunca são enviados para nenhum servidor.
+  </div>
+</footer>
+
+<script src="js/verificarRosto.js"></script>
+<script src="js/changelog-data.js"></script>
+<script src="js/changelog.js"></script>
+</body>
+</html>

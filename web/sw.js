@@ -4,16 +4,18 @@
  * quem já visitou o site continuar vendo uma versão antiga depois de uma
  * atualização.
  */
-const CACHE_VERSION = 'conecta-mais-v12';
+const CACHE_VERSION = 'conecta-mais-v13';
 const PRECACHE_URLS = [
   'index.html',
   'praticar.html',
   'verificar.html',
+  'verificar-rosto.html',
   'historico.html',
   'css/style.css',
   'js/main.js',
   'js/praticar.js',
   'js/verificar.js',
+  'js/verificarRosto.js',
   'js/scamDetector.js',
   'js/siteTour.js',
   'js/changelog-data.js',
