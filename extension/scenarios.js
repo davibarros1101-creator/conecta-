@@ -126,6 +126,20 @@ const SCENARIOS = [
     "explicacao": "É um golpe conhecido como \"boleto clonado\". O golpista copia uma conta de luz, água ou telefone de verdade e troca só o código de barras, pra receber o pagamento na conta dele em vez da empresa. Nunca pague um boleto recebido por WhatsApp ou e-mail sem antes conferir o valor e o código de barras direto no aplicativo oficial da empresa ou no site dela."
   },
   {
+    "id": "falso-cadastro-selfie",
+    "categoria": "Pedido de selfie ou foto de documento",
+    "canal": "WhatsApp",
+    "remetente": "\"Recadastramento Caixa\"",
+    "mensagem": "Para continuar recebendo seu benefício, é necessário concluir o recadastramento. Envie uma selfie segurando seu documento com foto nos próximos 30 minutos.",
+    "isGolpe": true,
+    "sinais": [
+      "Pedido de foto do rosto/selfie",
+      "Urgência (prazo curto)",
+      "Se passa por órgão oficial"
+    ],
+    "explicacao": "É um golpe. Pedir selfie segurando documento é uma forma de roubar sua identidade: com essa foto, golpistas conseguem abrir contas, pegar empréstimos ou fazer cartões em seu nome. Órgãos públicos e bancos não pedem esse tipo de foto por WhatsApp."
+  },
+  {
     "id": "extrato-legitimo",
     "categoria": "Comunicação real do banco",
     "canal": "E-mail",

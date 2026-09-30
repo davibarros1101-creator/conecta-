@@ -36,7 +36,7 @@ const SCAM_RULES = [
   {
     categoria: 'Pedido de senha, código ou dados sensíveis',
     peso: 'forte',
-    padrao: /\b(senha|c[oó]digo de verifica[cç][aã]o|cvv|n[uú]mero do cart[aã]o|dados banc[aá]rios|confirme seus dados)\b/i,
+    padrao: /\b(senha|c[oó]digo de verifica[cç][aã]o|cvv|n[uú]mero do cart[aã]o|dados banc[aá]rios|confirme seus dados|cpf|selfie|foto do (seu )?rosto|segurando.{0,20}documento)\b/i,
   },
   {
     categoria: 'Link ou site suspeito',

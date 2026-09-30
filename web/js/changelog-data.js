@@ -6,6 +6,12 @@
  */
 const CHANGELOG = [
   {
+    version: 'v9',
+    date: '2026-09-30',
+    title: 'Nova seção "5 coisas que você nunca deve fazer" e alerta de pedido de selfie',
+    description: 'A página inicial agora tem um resumo direto das regras mais importantes: nunca clicar em link desconhecido, nunca passar código de SMS, nunca informar dados pessoais, nunca enviar foto do rosto e nunca pagar por pressa. O verificador também passou a reconhecer pedidos de selfie ou foto de documento, usados por golpistas para roubar identidade, com uma nova situação de prática sobre isso.',
+  },
+  {
     version: 'v8',
     date: '2026-09-30',
     title: 'Mais tipos de golpe reconhecidos, incluindo boleto clonado',
