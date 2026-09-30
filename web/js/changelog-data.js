@@ -6,6 +6,12 @@
  */
 const CHANGELOG = [
   {
+    version: 'v8',
+    date: '2026-09-30',
+    title: 'Mais tipos de golpe reconhecidos, incluindo boleto clonado',
+    description: 'O verificador agora também reconhece PIX "enviado por engano" pedindo devolução, investimento com lucro garantido, falsas vagas de emprego, falso sequestro de familiar, falsa central de cartão por telefone e o golpe do boleto clonado (conta de luz/água falsa enviada por WhatsApp ou e-mail). Também foi adicionada uma nova situação de prática sobre boleto clonado, e o aviso de "parece documento oficial" agora explica que é preciso conferir o nome da empresa no código de barras antes de pagar.',
+  },
+  {
     version: 'v7',
     date: '2026-09-30',
     title: 'Detector reconhece mais um tipo de golpe comum',

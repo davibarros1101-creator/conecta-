@@ -1,7 +1,3 @@
-// Cenarios de pratica do Conecta+ - gerado a partir de shared/scenarios.json.
-// Arquivo em JS puro (nao JSON) de proposito: assim funciona mesmo abrindo o
-// index.html direto (file://), sem precisar de servidor, e a extensao de
-// navegador consegue carregar como <script src> comum.
 const SCENARIOS = [
   {
     "id": "premio-taxa",
@@ -114,6 +110,20 @@ const SCENARIOS = [
       "Nunca se encontraram pessoalmente"
     ],
     "explicacao": "É um golpe muito comum, conhecido como \"golpe do amor\". Pedidos de dinheiro de pessoas que você só conhece pela internet, mesmo depois de meses de conversa, quase sempre são golpe."
+  },
+  {
+    "id": "boleto-clonado",
+    "categoria": "Boleto clonado (conta de luz/água falsa)",
+    "canal": "WhatsApp",
+    "remetente": "\"Companhia de energia\"",
+    "mensagem": "Prezado cliente, segue sua fatura de energia atualizada em anexo. Caso já tenha pago, desconsidere. Pague em qualquer banco ou use o código de barras da imagem.",
+    "isGolpe": true,
+    "sinais": [
+      "Boleto de empresa enviado fora do canal oficial (WhatsApp)",
+      "Pedido para pagar com urgência",
+      "Código de barras diferente do usado sempre"
+    ],
+    "explicacao": "É um golpe conhecido como \"boleto clonado\". O golpista copia uma conta de luz, água ou telefone de verdade e troca só o código de barras, pra receber o pagamento na conta dele em vez da empresa. Nunca pague um boleto recebido por WhatsApp ou e-mail sem antes conferir o valor e o código de barras direto no aplicativo oficial da empresa ou no site dela."
   },
   {
     "id": "extrato-legitimo",

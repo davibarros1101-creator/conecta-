@@ -61,6 +61,50 @@ const SCAM_RULES = [
     peso: 'forte',
     padrao: /\b(aplicativo|app|banco|internet banking).{0,25}(n[aã]o est[aá] (funcionando|conectando)|fora do ar|com problema|travad[oa])\b|\b(te|lhe)?\s*reembolso\s*(depois|mais tarde|assim que)/i,
   },
+  {
+    // PIX enviado "errado"/"a mais" e pede devolução. A vítima devolve de
+    // verdade, e depois o PIX original é estornado (ou era de uma conta
+    // roubada) - ela perde o dinheiro que devolveu.
+    categoria: 'PIX enviado "por engano" pedindo devolução',
+    peso: 'forte',
+    padrao: /\b(pix|dep[oó]sito).{0,25}(por engano|errado|sem querer|a mais)\b|\bdevolv(er|a|e).{0,20}pix\b/i,
+  },
+  {
+    categoria: 'Investimento com lucro garantido',
+    peso: 'forte',
+    padrao: /\b(lucro garantido|rentabilidade de \d|dobr\w+ (o|seu) dinheiro|investimento sem risco|renda extra garantida|multiplica\w* seu dinheiro)\b/i,
+  },
+  {
+    categoria: 'Falsa vaga de emprego ou tarefa paga',
+    peso: 'forte',
+    padrao: /\b(vaga dispon[ií]vel|trabalhe de casa|renda extra.{0,15}(whatsapp|celular)|tarefa(s)? (simples|rápidas)|curtir v[ií]deos?|avaliar produtos? e ganhar)\b/i,
+  },
+  {
+    // Golpe do falso sequestro: liga dizendo que um familiar foi
+    // sequestrado ou está em apuros (acidente, preso) e pede dinheiro ou
+    // pix na hora, sem deixar a pessoa checar.
+    categoria: 'Falso sequestro ou familiar em apuros',
+    peso: 'forte',
+    padrao: /\b(seu (filho|neto|marido|esposa|pai|m[aã]e)|sua (filha|neta|esposa)).{0,30}(sequestr\w*|bateu o carro|sofreu um acidente|foi preso|est[aá] detido)\b|\bn[aã]o (desligue|desliga) o telefone\b/i,
+  },
+  {
+    // Falsa central de cartão: liga se passando pelo banco, avisa de
+    // "compra suspeita" e induz a pessoa a passar o cartão pra um
+    // motoboy/chip novo ou confirmar dados "pra cancelar".
+    categoria: 'Falsa central de cartão ou banco por telefone',
+    peso: 'forte',
+    padrao: /\b(compra suspeita|tentativa de compra|motoboy (vai )?(passar|buscar)|entregar(emos)? um novo cart[aã]o|chip (de seguran[cç]a|novo)|recolher (o|seu) cart[aã]o)\b/i,
+  },
+  {
+    // Boleto clonado: o golpista copia uma conta de luz, água, telefone
+    // etc. de verdade e só troca o código de barras/beneficiário, pra
+    // receber o pagamento na conta dele. Achado real: comparação entre
+    // conta de luz falsa e original, onde a única diferença visível era a
+    // parte de baixo (código de barras) incompleta na falsa.
+    categoria: 'Possível boleto clonado (conta com valor ou vencimento trocado)',
+    peso: 'fraco',
+    padrao: /\b(fatura|boleto|conta)\b.{0,30}\b(atualizad\w*|corrigid\w*|segunda via|nova via)\b|\b(segunda via|nova via)\b.{0,30}\b(fatura|boleto|conta)\b/i,
+  },
 ];
 
 // Sinais de que é um documento oficial de verdade (conta de água, luz,
@@ -115,6 +159,16 @@ function analisarTexto(textoOriginal) {
   // (no máximo 1 sinal fraco, tipo "pagar" - normal em qualquer boleto de
   // verdade) e existe pelo menos um campo típico de conta oficial (código
   // de barras, linha digitável, CNPJ, vencimento...).
+  //
+  // IMPORTANTE (achado real, com exemplo de boleto de luz falso de
+  // verdade): ter esses campos não prova que o boleto é legítimo - existe
+  // o golpe do "boleto clonado", onde o golpista copia a conta de luz/água
+  // de verdade e só troca o nome do beneficiário e o código de barras/PIX,
+  // pra receber o pagamento na conta dele em vez da concessionária. Texto
+  // sozinho (OCR) não consegue confirmar se o beneficiário é mesmo a
+  // empresa certa - por isso esse selo nunca deve soar como "100%
+  // confirmado", e a tela de resultado sempre orienta a conferir o nome
+  // da empresa antes de pagar.
   const pareceDocumentoOficial = riscoGolpe === 'baixo' && sinaisDocumentoOficial > 0;
 
   return {

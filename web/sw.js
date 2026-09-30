@@ -4,7 +4,7 @@
  * quem já visitou o site continuar vendo uma versão antiga depois de uma
  * atualização.
  */
-const CACHE_VERSION = 'conecta-mais-v10';
+const CACHE_VERSION = 'conecta-mais-v11';
 const PRECACHE_URLS = [
   'index.html',
   'praticar.html',
