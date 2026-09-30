@@ -577,8 +577,8 @@ footer strong { color: #fff; }
   left: 1.5rem;
   bottom: 1.5rem;
   z-index: 60;
-  width: 52px;
-  height: 52px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 2px solid var(--purple);
   background: #fff;
@@ -589,9 +589,17 @@ footer strong { color: #fff; }
   align-items: center;
   justify-content: center;
   padding: 0;
-  transition: transform 0.15s ease, opacity 0.2s ease;
+  /* Fica semi-transparente por padrão de propósito: esses botões são
+     fixos e podem acabar em cima de um botão real da página (ex.: o
+     "SIM" da prática, ou "Cadastrar" no Verificar rosto) dependendo do
+     tamanho da tela e do quanto rolou - achado real, reportado por
+     usuário que não achava o botão de cadastro. Com opacidade reduzida
+     em repouso, o que está embaixo continua legível; fica sólido só ao
+     passar o mouse/focar, quando a intenção de usar o botão é clara. */
+  opacity: 0.55;
+  transition: transform 0.15s ease, opacity 0.15s ease;
 }
-.tour-toggle:hover { transform: scale(1.06); }
+.tour-toggle:hover, .tour-toggle:focus-visible { transform: scale(1.06); opacity: 1; }
 .tour-toggle--hidden { opacity: 0; pointer-events: none; transform: scale(0.85); }
 
 .tour-overlay {
@@ -752,10 +760,10 @@ body.tour-active { overflow: hidden; }
      duas bordas de qualquer botão de largura total (ex.: "+ Cadastrar um
      novo rosto"), deixando ele praticamente ilegível ao rolar a página. */
   left: 1.5rem;
-  bottom: 5.5rem;
+  bottom: 5rem;
   z-index: 60;
-  width: 52px;
-  height: 52px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 2px solid var(--ink);
   background: #fff;
@@ -767,8 +775,10 @@ body.tour-active { overflow: hidden; }
   justify-content: center;
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 1.05rem;
+  font-size: 0.95rem;
+  opacity: 0.55;
+  transition: transform 0.15s ease, opacity 0.15s ease;
 }
 .a11y-toggle--ativo { background: var(--ink); color: #fff; }
-.a11y-toggle:hover { transform: scale(1.06); }
+.a11y-toggle:hover, .a11y-toggle:focus-visible { transform: scale(1.06); opacity: 1; }
 .a11y-toggle--hidden { opacity: 0; pointer-events: none; transform: scale(0.85); }
