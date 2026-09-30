@@ -59,9 +59,14 @@
           </div>
 
           <div data-cadastro-painel="camera" class="verify-panel">
-            <p class="verify-hint" style="margin-top:0;">Peça pra pessoa olhar pra câmera com boa luz.</p>
+            <p class="verify-hint" style="margin-top:0;" data-hint-cadastro-camera>Peça pra pessoa olhar pra câmera com boa luz e clique em "Tirar foto".</p>
             <div class="webcam-box">
               <video data-video-cadastro autoplay muted playsinline></video>
+              <img data-foto-tirada-cadastro alt="Foto tirada" hidden>
+            </div>
+            <div class="face-actions" style="margin-top:0.8rem;">
+              <button type="button" class="btn btn-primary btn-block" data-tirar-foto-cadastro>📸 Tirar foto</button>
+              <button type="button" class="btn btn-outline btn-block" data-tirar-outra-cadastro hidden>Tirar outra foto</button>
             </div>
           </div>
 
@@ -82,7 +87,7 @@
           <div data-status-cadastro class="verify-status" hidden></div>
           <input type="text" data-nome-input placeholder="Nome da pessoa (ex: minha filha Ana)" class="face-nome-input" maxlength="40">
           <div class="face-actions">
-            <button type="button" class="btn btn-primary" data-capturar-btn>Capturar e salvar</button>
+            <button type="button" class="btn btn-primary" data-capturar-btn>Salvar</button>
             <button type="button" class="btn btn-outline" data-cancelar-cadastro>Cancelar</button>
           </div>
         </div>
@@ -101,6 +106,11 @@
             <div data-verificacao-painel="camera" class="verify-panel">
               <div class="webcam-box">
                 <video data-video-verificar autoplay muted playsinline></video>
+                <img data-foto-tirada-verificar alt="Foto tirada" hidden>
+              </div>
+              <div class="face-actions" style="margin-top:0.8rem;">
+                <button type="button" class="btn btn-primary btn-block" data-tirar-foto-verificar>📸 Tirar foto</button>
+                <button type="button" class="btn btn-outline btn-block" data-tirar-outra-verificar hidden>Tirar outra foto</button>
               </div>
             </div>
 

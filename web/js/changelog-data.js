@@ -6,6 +6,12 @@
  */
 const CHANGELOG = [
   {
+    version: 'v11',
+    date: '2026-09-30',
+    title: 'Botão "Tirar foto" no Verificar rosto',
+    description: 'No modo câmera, agora aparece um botão "Tirar foto" pra congelar a imagem antes de salvar ou comparar, em vez de processar direto o que a câmera está vendo ao vivo. Dá pra ver a foto capturada e clicar em "Tirar outra foto" se não ficou boa, antes de confirmar.',
+  },
+  {
     version: 'v10',
     date: '2026-09-30',
     title: 'Nova ferramenta: Verificar rosto por webcam ou foto',

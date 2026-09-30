@@ -5,6 +5,10 @@
  * processamento todo local no navegador - a imagem e os rostos cadastrados
  * nunca saem do computador).
  *
+ * No modo câmera, a pessoa precisa clicar em "Tirar foto" pra congelar um
+ * quadro antes de salvar/comparar - evita processar um frame ao acaso da
+ * câmera ao vivo sem a pessoa ver o que foi capturado.
+ *
  * Verificado de verdade (não é simulação): os mesmos modelos e o mesmo
  * cálculo de distância euclidiana usados aqui foram testados com fotos
  * reais de pessoas diferentes antes de entrar no ar, confirmando que
@@ -24,6 +28,9 @@
   const abrirCadastroBtn = document.querySelector('[data-abrir-cadastro]');
   const painelCadastro = document.querySelector('[data-painel-cadastro]');
   const videoCadastro = document.querySelector('[data-video-cadastro]');
+  const fotoTiradaCadastroImg = document.querySelector('[data-foto-tirada-cadastro]');
+  const tirarFotoCadastroBtn = document.querySelector('[data-tirar-foto-cadastro]');
+  const tirarOutraCadastroBtn = document.querySelector('[data-tirar-outra-cadastro]');
   const statusCadastroEl = document.querySelector('[data-status-cadastro]');
   const nomeInput = document.querySelector('[data-nome-input]');
   const capturarBtn = document.querySelector('[data-capturar-btn]');
@@ -39,6 +46,9 @@
   const abrirVerificacaoBtn = document.querySelector('[data-abrir-verificacao]');
   const painelVerificacao = document.querySelector('[data-painel-verificacao]');
   const videoVerificar = document.querySelector('[data-video-verificar]');
+  const fotoTiradaVerificarImg = document.querySelector('[data-foto-tirada-verificar]');
+  const tirarFotoVerificarBtn = document.querySelector('[data-tirar-foto-verificar]');
+  const tirarOutraVerificarBtn = document.querySelector('[data-tirar-outra-verificar]');
   const compararBtn = document.querySelector('[data-comparar-btn]');
   const fecharVerificacaoBtn = document.querySelector('[data-fechar-verificacao]');
   const statusVerificacaoEl = document.querySelector('[data-status-verificacao]');
@@ -102,6 +112,8 @@
   let abaVerificacao = 'camera';
   let arquivoCadastro = null;
   let arquivoVerificar = null;
+  let fotoCameraCadastro = null; // canvas com o quadro congelado, ou null
+  let fotoCameraVerificar = null;
 
   async function ligarCamera(videoEl) {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -128,34 +140,32 @@
   }
 
   // --- Detecção -------------------------------------------------------
-  async function detectarRosto(videoOuImg) {
+  async function detectarRosto(videoOuImgOuCanvas) {
     return faceapi
-      .detectSingleFace(videoOuImg, new faceapi.TinyFaceDetectorOptions())
+      .detectSingleFace(videoOuImgOuCanvas, new faceapi.TinyFaceDetectorOptions())
       .withFaceLandmarks(true)
       .withFaceDescriptor();
   }
 
-  function capturarThumbnailDeVideo(videoEl) {
+  // Congela o quadro atual da câmera num canvas em tamanho real (usado pra
+  // detecção) e devolve também um dataURL pra mostrar na tela.
+  function tirarFotoDoVideo(videoEl) {
     const canvas = document.createElement('canvas');
-    const lado = Math.min(videoEl.videoWidth, videoEl.videoHeight);
-    canvas.width = 120;
-    canvas.height = 120;
-    const ctx = canvas.getContext('2d');
-    const offsetX = (videoEl.videoWidth - lado) / 2;
-    const offsetY = (videoEl.videoHeight - lado) / 2;
-    ctx.drawImage(videoEl, offsetX, offsetY, lado, lado, 0, 0, 120, 120);
-    return canvas.toDataURL('image/jpeg', 0.75);
+    canvas.width = videoEl.videoWidth;
+    canvas.height = videoEl.videoHeight;
+    canvas.getContext('2d').drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+    return canvas;
   }
 
-  function capturarThumbnailDeImg(imgEl) {
+  function gerarThumbnail(fonte, largura, altura) {
     const canvas = document.createElement('canvas');
-    const lado = Math.min(imgEl.naturalWidth, imgEl.naturalHeight);
+    const lado = Math.min(largura, altura);
     canvas.width = 120;
     canvas.height = 120;
     const ctx = canvas.getContext('2d');
-    const offsetX = (imgEl.naturalWidth - lado) / 2;
-    const offsetY = (imgEl.naturalHeight - lado) / 2;
-    ctx.drawImage(imgEl, offsetX, offsetY, lado, lado, 0, 0, 120, 120);
+    const offsetX = (largura - lado) / 2;
+    const offsetY = (altura - lado) / 2;
+    ctx.drawImage(fonte, offsetX, offsetY, lado, lado, 0, 0, 120, 120);
     return canvas.toDataURL('image/jpeg', 0.75);
   }
 
@@ -177,10 +187,26 @@
     });
   }
 
+  function mostrarVideoCadastro() {
+    fotoCameraCadastro = null;
+    videoCadastro.hidden = false;
+    fotoTiradaCadastroImg.hidden = true;
+    tirarFotoCadastroBtn.hidden = false;
+    tirarOutraCadastroBtn.hidden = true;
+  }
+  function mostrarVideoVerificar() {
+    fotoCameraVerificar = null;
+    videoVerificar.hidden = false;
+    fotoTiradaVerificarImg.hidden = true;
+    tirarFotoVerificarBtn.hidden = false;
+    tirarOutraVerificarBtn.hidden = true;
+  }
+
   configurarTabs(cadastroTabs, cadastroPaineis, {
     onCamera: async () => {
       abaCadastro = 'camera';
       setStatus(statusCadastroEl, null);
+      mostrarVideoCadastro();
       try {
         streamCadastro = await ligarCamera(videoCadastro);
       } catch (err) {
@@ -199,6 +225,7 @@
     onCamera: async () => {
       abaVerificacao = 'camera';
       setStatus(statusVerificacaoEl, null);
+      mostrarVideoVerificar();
       try {
         streamVerificacao = await ligarCamera(videoVerificar);
       } catch (err) {
@@ -212,6 +239,38 @@
       setStatus(statusVerificacaoEl, null);
     },
   });
+
+  // --- Tirar foto (cadastro) ---------------------------------------
+  tirarFotoCadastroBtn.addEventListener('click', () => {
+    if (!streamCadastro) {
+      setStatus(statusCadastroEl, '<span>A câmera não está ligada. Tente de novo.</span>');
+      return;
+    }
+    fotoCameraCadastro = tirarFotoDoVideo(videoCadastro);
+    fotoTiradaCadastroImg.src = fotoCameraCadastro.toDataURL('image/jpeg', 0.85);
+    fotoTiradaCadastroImg.hidden = false;
+    videoCadastro.hidden = true;
+    tirarFotoCadastroBtn.hidden = true;
+    tirarOutraCadastroBtn.hidden = false;
+    setStatus(statusCadastroEl, null);
+  });
+  tirarOutraCadastroBtn.addEventListener('click', mostrarVideoCadastro);
+
+  // --- Tirar foto (verificação) ---------------------------------------
+  tirarFotoVerificarBtn.addEventListener('click', () => {
+    if (!streamVerificacao) {
+      setStatus(statusVerificacaoEl, '<span>A câmera não está ligada. Tente de novo.</span>');
+      return;
+    }
+    fotoCameraVerificar = tirarFotoDoVideo(videoVerificar);
+    fotoTiradaVerificarImg.src = fotoCameraVerificar.toDataURL('image/jpeg', 0.85);
+    fotoTiradaVerificarImg.hidden = false;
+    videoVerificar.hidden = true;
+    tirarFotoVerificarBtn.hidden = true;
+    tirarOutraVerificarBtn.hidden = false;
+    setStatus(statusVerificacaoEl, null);
+  });
+  tirarOutraVerificarBtn.addEventListener('click', mostrarVideoVerificar);
 
   // --- Upload de foto (cadastro) ---------------------------------------
   function selecionarArquivoCadastro(file) {
@@ -265,6 +324,7 @@
     abaCadastro = 'camera';
     cadastroTabs.forEach((t) => t.classList.toggle('active', t.dataset.cadastroTab === 'camera'));
     cadastroPaineis.forEach((p) => { p.hidden = p.dataset.cadastroPainel !== 'camera'; });
+    mostrarVideoCadastro();
     try {
       streamCadastro = await ligarCamera(videoCadastro);
     } catch (err) {
@@ -276,6 +336,7 @@
     painelCadastro.hidden = true;
     desligarCamera(streamCadastro);
     streamCadastro = null;
+    fotoCameraCadastro = null;
     arquivoCadastro = null;
     previewWrapCadastro.hidden = true;
     fileInputCadastro.value = '';
@@ -285,12 +346,12 @@
   capturarBtn.addEventListener('click', async () => {
     const nome = nomeInput.value.trim();
     if (!nome) {
-      setStatus(statusCadastroEl, '<span>Digite o nome da pessoa antes de capturar.</span>');
+      setStatus(statusCadastroEl, '<span>Digite o nome da pessoa antes de salvar.</span>');
       return;
     }
     const usandoCamera = abaCadastro === 'camera';
-    if (usandoCamera && !streamCadastro) {
-      setStatus(statusCadastroEl, '<span>A câmera não está ligada. Tente de novo.</span>');
+    if (usandoCamera && !fotoCameraCadastro) {
+      setStatus(statusCadastroEl, '<span>Clique em "Tirar foto" antes de salvar.</span>');
       return;
     }
     if (!usandoCamera && !arquivoCadastro) {
@@ -300,13 +361,15 @@
     capturarBtn.disabled = true;
     setStatus(statusCadastroEl, '<div class="spinner"></div><span>Procurando o rosto…</span>');
     try {
-      const fonte = usandoCamera ? videoCadastro : previewCadastro;
+      const fonte = usandoCamera ? fotoCameraCadastro : previewCadastro;
       const det = await detectarRosto(fonte);
       if (!det) {
-        setStatus(statusCadastroEl, '<span>Não conseguimos identificar um rosto. ' + (usandoCamera ? 'Aproxime-se da câmera, garanta boa iluminação e tente de novo.' : 'Tente uma foto com o rosto mais visível e de frente.') + '</span>');
+        setStatus(statusCadastroEl, '<span>Não conseguimos identificar um rosto nessa ' + (usandoCamera ? 'foto. Tire outra com boa iluminação e o rosto de frente.' : 'foto. Tente uma com o rosto mais visível e de frente.') + '</span>');
         return;
       }
-      const foto = usandoCamera ? capturarThumbnailDeVideo(videoCadastro) : capturarThumbnailDeImg(previewCadastro);
+      const largura = usandoCamera ? fotoCameraCadastro.width : previewCadastro.naturalWidth;
+      const altura = usandoCamera ? fotoCameraCadastro.height : previewCadastro.naturalHeight;
+      const foto = gerarThumbnail(fonte, largura, altura);
       const rostos = lerRostos();
       rostos.push({ id: `${Date.now()}`, nome, descriptor: Array.from(det.descriptor), foto });
       salvarRostos(rostos);
@@ -314,7 +377,7 @@
       setStatus(statusCadastroEl, null);
       fecharCadastro();
     } catch (err) {
-      setStatus(statusCadastroEl, `<span>Não foi possível capturar agora (${esc(err.message || 'erro desconhecido')}).</span>`);
+      setStatus(statusCadastroEl, `<span>Não foi possível salvar agora (${esc(err.message || 'erro desconhecido')}).</span>`);
     } finally {
       capturarBtn.disabled = false;
     }
@@ -328,6 +391,7 @@
     abaVerificacao = 'camera';
     verificacaoTabs.forEach((t) => t.classList.toggle('active', t.dataset.verificacaoTab === 'camera'));
     verificacaoPaineis.forEach((p) => { p.hidden = p.dataset.verificacaoPainel !== 'camera'; });
+    mostrarVideoVerificar();
     try {
       streamVerificacao = await ligarCamera(videoVerificar);
     } catch (err) {
@@ -339,6 +403,7 @@
     painelVerificacao.hidden = true;
     desligarCamera(streamVerificacao);
     streamVerificacao = null;
+    fotoCameraVerificar = null;
     arquivoVerificar = null;
     previewWrapVerificar.hidden = true;
     fileInputVerificar.value = '';
@@ -376,8 +441,8 @@
       return;
     }
     const usandoCamera = abaVerificacao === 'camera';
-    if (usandoCamera && !streamVerificacao) {
-      setStatus(statusVerificacaoEl, '<span>A câmera não está ligada. Tente de novo.</span>');
+    if (usandoCamera && !fotoCameraVerificar) {
+      setStatus(statusVerificacaoEl, '<span>Clique em "Tirar foto" antes de comparar.</span>');
       return;
     }
     if (!usandoCamera && !arquivoVerificar) {
@@ -388,10 +453,10 @@
     resultadoVerificacaoEl.hidden = true;
     setStatus(statusVerificacaoEl, '<div class="spinner"></div><span>Comparando o rosto…</span>');
     try {
-      const fonte = usandoCamera ? videoVerificar : previewVerificar;
+      const fonte = usandoCamera ? fotoCameraVerificar : previewVerificar;
       const det = await detectarRosto(fonte);
       if (!det) {
-        setStatus(statusVerificacaoEl, '<span>Não conseguimos identificar um rosto' + (usandoCamera ? ' na câmera. Aproxime-se, garanta boa iluminação e tente de novo.' : ' nessa foto. Tente uma foto com o rosto mais visível e de frente.') + '</span>');
+        setStatus(statusVerificacaoEl, '<span>Não conseguimos identificar um rosto nessa ' + (usandoCamera ? 'foto. Tire outra com boa iluminação e o rosto de frente.' : 'foto. Tente uma com o rosto mais visível e de frente.') + '</span>');
         return;
       }
       let melhor = null;
