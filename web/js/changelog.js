@@ -6,6 +6,7 @@
  * (conveniência de exibição, não dado sensível).
  */
 const CHANGELOG_SEEN_KEY = 'conectaMais:changelogSeen';
+const ICON_CLOSE = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>';
 
 function contarNovidades() {
   if (typeof CHANGELOG === 'undefined' || !CHANGELOG.length) return 0;
@@ -84,6 +85,7 @@ function esc(s) {
     toast.innerHTML = `
       <span>O Conecta+ foi atualizado.</span>
       <button type="button" class="btn btn-primary" data-ver-novidades>Ver novidades</button>
+      <button type="button" class="update-toast__fechar" data-fechar-toast aria-label="Fechar aviso">${ICON_CLOSE}</button>
     `;
     document.body.appendChild(toast);
     toast.querySelector('[data-ver-novidades]').addEventListener('click', () => {
@@ -94,6 +96,10 @@ function esc(s) {
         window.location.href = 'index.html#novidades';
       }
     });
+    // Sem botão de fechar, um aviso que aparece bem em cima de um card
+    // clicável deixava a pessoa "travada" esperando os 15s passarem
+    // (achado real, visto numa revisão de tela em resolução de notebook).
+    toast.querySelector('[data-fechar-toast]').addEventListener('click', () => toast.remove());
     setTimeout(() => toast.remove(), 15000);
   }
 

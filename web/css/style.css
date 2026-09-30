@@ -721,6 +721,17 @@ body.tour-active { overflow: hidden; }
 }
 .update-toast span { font-size: 0.9rem; }
 .update-toast .btn { padding: 0.5rem 1rem; font-size: 0.85rem; white-space: nowrap; }
+.update-toast__fechar {
+  flex-shrink: 0;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.update-toast__fechar:hover { background: rgba(255,255,255,0.28); }
 
 /* ---------- Gráfico de progresso (historico.html) ---------- */
 .historico-chart { width: 100%; height: auto; display: block; overflow: visible; }
