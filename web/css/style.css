@@ -744,8 +744,12 @@ body.tour-active { overflow: hidden; }
 /* ---------- Botão de acessibilidade (texto maior + contraste) ---------- */
 .a11y-toggle {
   position: fixed;
-  right: 1.5rem;
-  bottom: 1.5rem;
+  /* Fica empilhado no mesmo canto do botão do tour (esquerdo), em vez de
+     cada um num canto - dois botões fixos em cantos opostos cobriam as
+     duas bordas de qualquer botão de largura total (ex.: "+ Cadastrar um
+     novo rosto"), deixando ele praticamente ilegível ao rolar a página. */
+  left: 1.5rem;
+  bottom: 5.5rem;
   z-index: 60;
   width: 52px;
   height: 52px;
