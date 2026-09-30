@@ -1,8 +1,9 @@
 /**
- * Tela "Verificar rosto": compara pela webcam o rosto de uma videochamada
- * com o rosto de uma pessoa de confiança cadastrada antes. Usa face-api.js
- * (modelos carregados do CDN, processamento todo local no navegador - a
- * imagem da câmera e os rostos cadastrados nunca saem do computador).
+ * Tela "Verificar rosto": compara pela câmera ou por uma foto enviada o
+ * rosto de uma videochamada/print com o rosto de uma pessoa de confiança
+ * cadastrada antes. Usa face-api.js (modelos carregados do CDN,
+ * processamento todo local no navegador - a imagem e os rostos cadastrados
+ * nunca saem do computador).
  *
  * Verificado de verdade (não é simulação): os mesmos modelos e o mesmo
  * cálculo de distância euclidiana usados aqui foram testados com fotos
@@ -23,20 +24,32 @@
   const abrirCadastroBtn = document.querySelector('[data-abrir-cadastro]');
   const painelCadastro = document.querySelector('[data-painel-cadastro]');
   const videoCadastro = document.querySelector('[data-video-cadastro]');
-  const canvasCadastro = document.querySelector('[data-canvas-cadastro]');
   const statusCadastroEl = document.querySelector('[data-status-cadastro]');
   const nomeInput = document.querySelector('[data-nome-input]');
   const capturarBtn = document.querySelector('[data-capturar-btn]');
   const cancelarCadastroBtn = document.querySelector('[data-cancelar-cadastro]');
+  const cadastroTabs = document.querySelectorAll('[data-cadastro-tab]');
+  const cadastroPaineis = document.querySelectorAll('[data-cadastro-painel]');
+  const uploadAreaCadastro = document.querySelector('[data-upload-area-cadastro]');
+  const fileInputCadastro = document.querySelector('[data-file-input-cadastro]');
+  const previewWrapCadastro = document.querySelector('[data-preview-wrap-cadastro]');
+  const previewCadastro = document.querySelector('[data-preview-cadastro]');
+  const removeCadastroBtn = document.querySelector('[data-remove-cadastro]');
 
   const abrirVerificacaoBtn = document.querySelector('[data-abrir-verificacao]');
   const painelVerificacao = document.querySelector('[data-painel-verificacao]');
   const videoVerificar = document.querySelector('[data-video-verificar]');
-  const canvasVerificar = document.querySelector('[data-canvas-verificar]');
   const compararBtn = document.querySelector('[data-comparar-btn]');
   const fecharVerificacaoBtn = document.querySelector('[data-fechar-verificacao]');
   const statusVerificacaoEl = document.querySelector('[data-status-verificacao]');
   const resultadoVerificacaoEl = document.querySelector('[data-resultado-verificacao]');
+  const verificacaoTabs = document.querySelectorAll('[data-verificacao-tab]');
+  const verificacaoPaineis = document.querySelectorAll('[data-verificacao-painel]');
+  const uploadAreaVerificar = document.querySelector('[data-upload-area-verificar]');
+  const fileInputVerificar = document.querySelector('[data-file-input-verificar]');
+  const previewWrapVerificar = document.querySelector('[data-preview-wrap-verificar]');
+  const previewVerificar = document.querySelector('[data-preview-verificar]');
+  const removeVerificarBtn = document.querySelector('[data-remove-verificar]');
 
   const ICON_CHECK = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>';
   const ICON_ALERT = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>';
@@ -85,6 +98,10 @@
   // --- Câmera -------------------------------------------------------
   let streamCadastro = null;
   let streamVerificacao = null;
+  let abaCadastro = 'camera';
+  let abaVerificacao = 'camera';
+  let arquivoCadastro = null;
+  let arquivoVerificar = null;
 
   async function ligarCamera(videoEl) {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -102,12 +119,12 @@
 
   function mensagemErroCamera(err) {
     if (err && err.name === 'NotAllowedError') {
-      return 'Acesso à câmera foi negado. Permita o uso da câmera nas configurações do navegador para usar essa ferramenta.';
+      return 'Acesso à câmera foi negado. Permita o uso da câmera nas configurações do navegador, ou use a opção "Enviar uma foto".';
     }
     if (err && err.name === 'NotFoundError') {
-      return 'Nenhuma câmera foi encontrada neste dispositivo.';
+      return 'Nenhuma câmera foi encontrada neste dispositivo. Use a opção "Enviar uma foto".';
     }
-    return `Não foi possível acessar a câmera (${esc((err && err.message) || 'erro desconhecido')}).`;
+    return `Não foi possível acessar a câmera (${esc((err && err.message) || 'erro desconhecido')}). Use a opção "Enviar uma foto".`;
   }
 
   // --- Detecção -------------------------------------------------------
@@ -118,7 +135,7 @@
       .withFaceDescriptor();
   }
 
-  function capturarThumbnail(videoEl) {
+  function capturarThumbnailDeVideo(videoEl) {
     const canvas = document.createElement('canvas');
     const lado = Math.min(videoEl.videoWidth, videoEl.videoHeight);
     canvas.width = 120;
@@ -130,11 +147,124 @@
     return canvas.toDataURL('image/jpeg', 0.75);
   }
 
+  function capturarThumbnailDeImg(imgEl) {
+    const canvas = document.createElement('canvas');
+    const lado = Math.min(imgEl.naturalWidth, imgEl.naturalHeight);
+    canvas.width = 120;
+    canvas.height = 120;
+    const ctx = canvas.getContext('2d');
+    const offsetX = (imgEl.naturalWidth - lado) / 2;
+    const offsetY = (imgEl.naturalHeight - lado) / 2;
+    ctx.drawImage(imgEl, offsetX, offsetY, lado, lado, 0, 0, 120, 120);
+    return canvas.toDataURL('image/jpeg', 0.75);
+  }
+
+  // --- Troca de aba (câmera / foto), reutilizável pros dois painéis ---------
+  function configurarTabs(tabs, paineis, {
+    onCamera, onFoto,
+  }) {
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const alvo = tab.dataset.cadastroTab || tab.dataset.verificacaoTab;
+        tabs.forEach((t) => t.classList.toggle('active', t === tab));
+        paineis.forEach((p) => {
+          const chave = p.dataset.cadastroPainel || p.dataset.verificacaoPainel;
+          p.hidden = chave !== alvo;
+        });
+        if (alvo === 'camera') onCamera();
+        else onFoto();
+      });
+    });
+  }
+
+  configurarTabs(cadastroTabs, cadastroPaineis, {
+    onCamera: async () => {
+      abaCadastro = 'camera';
+      setStatus(statusCadastroEl, null);
+      try {
+        streamCadastro = await ligarCamera(videoCadastro);
+      } catch (err) {
+        setStatus(statusCadastroEl, `<span>${mensagemErroCamera(err)}</span>`);
+      }
+    },
+    onFoto: () => {
+      abaCadastro = 'foto';
+      desligarCamera(streamCadastro);
+      streamCadastro = null;
+      setStatus(statusCadastroEl, null);
+    },
+  });
+
+  configurarTabs(verificacaoTabs, verificacaoPaineis, {
+    onCamera: async () => {
+      abaVerificacao = 'camera';
+      setStatus(statusVerificacaoEl, null);
+      try {
+        streamVerificacao = await ligarCamera(videoVerificar);
+      } catch (err) {
+        setStatus(statusVerificacaoEl, `<span>${mensagemErroCamera(err)}</span>`);
+      }
+    },
+    onFoto: () => {
+      abaVerificacao = 'foto';
+      desligarCamera(streamVerificacao);
+      streamVerificacao = null;
+      setStatus(statusVerificacaoEl, null);
+    },
+  });
+
+  // --- Upload de foto (cadastro) ---------------------------------------
+  function selecionarArquivoCadastro(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    arquivoCadastro = file;
+    previewCadastro.src = URL.createObjectURL(file);
+    previewWrapCadastro.hidden = false;
+    setStatus(statusCadastroEl, null);
+  }
+  fileInputCadastro.addEventListener('change', (e) => selecionarArquivoCadastro(e.target.files[0]));
+  uploadAreaCadastro.addEventListener('drop', (e) => {
+    e.preventDefault();
+    selecionarArquivoCadastro(e.dataTransfer.files && e.dataTransfer.files[0]);
+  });
+  ['dragover', 'dragenter'].forEach((evt) => uploadAreaCadastro.addEventListener(evt, (e) => { e.preventDefault(); uploadAreaCadastro.classList.add('is-dragover'); }));
+  ['dragleave', 'drop'].forEach((evt) => uploadAreaCadastro.addEventListener(evt, () => uploadAreaCadastro.classList.remove('is-dragover')));
+  removeCadastroBtn.addEventListener('click', () => {
+    arquivoCadastro = null;
+    previewCadastro.src = '';
+    previewWrapCadastro.hidden = true;
+    fileInputCadastro.value = '';
+  });
+
+  // --- Upload de foto (verificação) ---------------------------------------
+  function selecionarArquivoVerificar(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    arquivoVerificar = file;
+    previewVerificar.src = URL.createObjectURL(file);
+    previewWrapVerificar.hidden = false;
+    setStatus(statusVerificacaoEl, null);
+  }
+  fileInputVerificar.addEventListener('change', (e) => selecionarArquivoVerificar(e.target.files[0]));
+  uploadAreaVerificar.addEventListener('drop', (e) => {
+    e.preventDefault();
+    selecionarArquivoVerificar(e.dataTransfer.files && e.dataTransfer.files[0]);
+  });
+  ['dragover', 'dragenter'].forEach((evt) => uploadAreaVerificar.addEventListener(evt, (e) => { e.preventDefault(); uploadAreaVerificar.classList.add('is-dragover'); }));
+  ['dragleave', 'drop'].forEach((evt) => uploadAreaVerificar.addEventListener(evt, () => uploadAreaVerificar.classList.remove('is-dragover')));
+  removeVerificarBtn.addEventListener('click', () => {
+    arquivoVerificar = null;
+    previewVerificar.src = '';
+    previewWrapVerificar.hidden = true;
+    fileInputVerificar.value = '';
+  });
+
   // --- Fluxo de cadastro ------------------------------------------------
   abrirCadastroBtn.addEventListener('click', async () => {
     painelCadastro.hidden = false;
     nomeInput.value = '';
     setStatus(statusCadastroEl, null);
+    abaCadastro = 'camera';
+    cadastroTabs.forEach((t) => t.classList.toggle('active', t.dataset.cadastroTab === 'camera'));
+    cadastroPaineis.forEach((p) => { p.hidden = p.dataset.cadastroPainel !== 'camera'; });
     try {
       streamCadastro = await ligarCamera(videoCadastro);
     } catch (err) {
@@ -146,6 +276,9 @@
     painelCadastro.hidden = true;
     desligarCamera(streamCadastro);
     streamCadastro = null;
+    arquivoCadastro = null;
+    previewWrapCadastro.hidden = true;
+    fileInputCadastro.value = '';
   }
   cancelarCadastroBtn.addEventListener('click', fecharCadastro);
 
@@ -155,19 +288,25 @@
       setStatus(statusCadastroEl, '<span>Digite o nome da pessoa antes de capturar.</span>');
       return;
     }
-    if (!streamCadastro) {
+    const usandoCamera = abaCadastro === 'camera';
+    if (usandoCamera && !streamCadastro) {
       setStatus(statusCadastroEl, '<span>A câmera não está ligada. Tente de novo.</span>');
+      return;
+    }
+    if (!usandoCamera && !arquivoCadastro) {
+      setStatus(statusCadastroEl, '<span>Escolha uma foto antes de salvar.</span>');
       return;
     }
     capturarBtn.disabled = true;
     setStatus(statusCadastroEl, '<div class="spinner"></div><span>Procurando o rosto…</span>');
     try {
-      const det = await detectarRosto(videoCadastro);
+      const fonte = usandoCamera ? videoCadastro : previewCadastro;
+      const det = await detectarRosto(fonte);
       if (!det) {
-        setStatus(statusCadastroEl, '<span>Não conseguimos identificar um rosto. Aproxime-se da câmera, garanta boa iluminação e tente de novo.</span>');
+        setStatus(statusCadastroEl, '<span>Não conseguimos identificar um rosto. ' + (usandoCamera ? 'Aproxime-se da câmera, garanta boa iluminação e tente de novo.' : 'Tente uma foto com o rosto mais visível e de frente.') + '</span>');
         return;
       }
-      const foto = capturarThumbnail(videoCadastro);
+      const foto = usandoCamera ? capturarThumbnailDeVideo(videoCadastro) : capturarThumbnailDeImg(previewCadastro);
       const rostos = lerRostos();
       rostos.push({ id: `${Date.now()}`, nome, descriptor: Array.from(det.descriptor), foto });
       salvarRostos(rostos);
@@ -186,6 +325,9 @@
     painelVerificacao.hidden = false;
     resultadoVerificacaoEl.hidden = true;
     setStatus(statusVerificacaoEl, null);
+    abaVerificacao = 'camera';
+    verificacaoTabs.forEach((t) => t.classList.toggle('active', t.dataset.verificacaoTab === 'camera'));
+    verificacaoPaineis.forEach((p) => { p.hidden = p.dataset.verificacaoPainel !== 'camera'; });
     try {
       streamVerificacao = await ligarCamera(videoVerificar);
     } catch (err) {
@@ -197,6 +339,9 @@
     painelVerificacao.hidden = true;
     desligarCamera(streamVerificacao);
     streamVerificacao = null;
+    arquivoVerificar = null;
+    previewWrapVerificar.hidden = true;
+    fileInputVerificar.value = '';
   }
   fecharVerificacaoBtn.addEventListener('click', fecharVerificacao);
 
@@ -217,7 +362,7 @@
       resultadoVerificacaoEl.innerHTML = `
         <div class="result-risk result-risk--alto">
           <p class="result-risk__title">${ICON_ALERT} Não bateu com nenhum rosto cadastrado</p>
-          <p class="result-risk__desc">O rosto da câmera não corresponde a nenhuma pessoa de confiança que você cadastrou. Desconfie, principalmente se a pessoa está pedindo dinheiro, dados ou algo urgente. Antes de agir, confirme por outro meio, como uma ligação de voz direto pro número que você já conhece.</p>
+          <p class="result-risk__desc">Esse rosto não corresponde a nenhuma pessoa de confiança que você cadastrou. Desconfie, principalmente se a pessoa está pedindo dinheiro, dados ou algo urgente. Antes de agir, confirme por outro meio, como uma ligação de voz direto pro número que você já conhece.</p>
         </div>
       `;
     }
@@ -230,17 +375,23 @@
       setStatus(statusVerificacaoEl, '<span>Você ainda não cadastrou nenhum rosto de confiança. Cadastre um primeiro.</span>');
       return;
     }
-    if (!streamVerificacao) {
+    const usandoCamera = abaVerificacao === 'camera';
+    if (usandoCamera && !streamVerificacao) {
       setStatus(statusVerificacaoEl, '<span>A câmera não está ligada. Tente de novo.</span>');
+      return;
+    }
+    if (!usandoCamera && !arquivoVerificar) {
+      setStatus(statusVerificacaoEl, '<span>Escolha uma foto antes de comparar.</span>');
       return;
     }
     compararBtn.disabled = true;
     resultadoVerificacaoEl.hidden = true;
     setStatus(statusVerificacaoEl, '<div class="spinner"></div><span>Comparando o rosto…</span>');
     try {
-      const det = await detectarRosto(videoVerificar);
+      const fonte = usandoCamera ? videoVerificar : previewVerificar;
+      const det = await detectarRosto(fonte);
       if (!det) {
-        setStatus(statusVerificacaoEl, '<span>Não conseguimos identificar um rosto na câmera. Aproxime-se, garanta boa iluminação e tente de novo.</span>');
+        setStatus(statusVerificacaoEl, '<span>Não conseguimos identificar um rosto' + (usandoCamera ? ' na câmera. Aproxime-se, garanta boa iluminação e tente de novo.' : ' nessa foto. Tente uma foto com o rosto mais visível e de frente.') + '</span>');
         return;
       }
       let melhor = null;

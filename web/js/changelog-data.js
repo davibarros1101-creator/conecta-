@@ -8,8 +8,8 @@ const CHANGELOG = [
   {
     version: 'v10',
     date: '2026-09-30',
-    title: 'Nova ferramenta: Verificar rosto por webcam',
-    description: 'Agora dá pra cadastrar o rosto de uma pessoa de confiança (parente, amigo) e, numa videochamada estranha, comparar pela webcam se é realmente ela. Tudo roda no navegador - nenhuma foto ou rosto cadastrado é enviado para servidor nenhum. É um apoio a mais, não substitui confirmar por telefone.',
+    title: 'Nova ferramenta: Verificar rosto por webcam ou foto',
+    description: 'Agora dá pra cadastrar o rosto de uma pessoa de confiança (parente, amigo) e, numa videochamada estranha, comparar se é realmente ela - pela webcam ao vivo ou enviando uma foto (print da chamada, foto de perfil). Tudo roda no navegador - nenhuma foto ou rosto cadastrado é enviado para servidor nenhum. É um apoio a mais, não substitui confirmar por telefone.',
   },
   {
     version: 'v9',
