@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Verificar rosto | Conecta+</title>
+<link rel="icon" href="icons/icon-48.png">
+<link rel="stylesheet" href="verificar.css">
+</head>
+<body>
+
+<header class="page-header">
+  <img src="icons/icon-48.png" alt="">
+  <div>
+    <strong>Conecta+</strong>
+    <span>Pessoas reais. Conexões seguras.</span>
+  </div>
+</header>
+
+<main class="page-main">
+  <h1>Verificar rosto</h1>
+  <p class="page-desc">Numa videochamada, compare o rosto da pessoa com alguém de confiança que você já cadastrou. Tudo roda aqui no seu computador, nenhuma foto é enviada pra nenhum servidor.</p>
+
+  <div class="verify-card" style="margin-bottom:1rem;">
+    <p class="face-disclaimer">
+      <strong>Isso é um apoio, não uma prova.</strong> A comparação de rosto pode errar, principalmente com pouca luz ou câmera de baixa qualidade. Nunca use só isso pra decidir - se a pessoa está pedindo dinheiro ou informação urgente, sempre confirme também ligando pro número que você já conhece dela.
+    </p>
+  </div>
+
+  <div class="verify-card" data-status-modelo style="margin-bottom:1rem;">
+    <div class="spinner"></div>
+    <span>Carregando o reconhecimento de rosto (só na primeira vez, pode levar um tempinho)…</span>
+  </div>
+
+  <div data-conteudo hidden>
+
+    <div class="verify-card" style="margin-bottom:1rem;">
+      <h2 class="face-section-title">1. Pessoas de confiança cadastradas</h2>
+      <div class="face-list" data-face-list>
+        <p class="face-empty" data-face-empty>Você ainda não cadastrou nenhum rosto.</p>
+      </div>
+      <button type="button" class="btn btn-outline--light btn-block" data-abrir-cadastro style="margin-top:1rem; width:100%;">+ Cadastrar um novo rosto</button>
+      <div class="face-list-actions">
+        <button type="button" class="btn btn-outline--light" data-exportar-rostos>Exportar cadastro</button>
+        <label class="btn btn-outline--light" for="file-input-importar" style="cursor:pointer;">Importar cadastro</label>
+        <input id="file-input-importar" type="file" accept="application/json" data-file-input-importar hidden>
+      </div>
+      <p class="verify-hint" data-status-exportar hidden></p>
+    </div>
+
+    <div class="verify-card" data-painel-cadastro hidden style="margin-bottom:1rem;">
+      <h2 class="face-section-title" data-cadastro-titulo>Cadastrar rosto de confiança</h2>
+
+      <div class="verify-tabs">
+        <button type="button" class="verify-tab active" data-cadastro-tab="camera"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px; margin-right:3px;"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>Usar câmera</button>
+        <button type="button" class="verify-tab" data-cadastro-tab="foto">Enviar uma foto</button>
+      </div>
+
+      <div data-cadastro-painel="camera" class="verify-panel">
+        <p class="verify-hint" style="margin-top:0;" data-hint-cadastro-camera>Peça pra pessoa olhar pra câmera com boa luz e clique em "Tirar foto".</p>
+        <div class="webcam-box">
+          <video data-video-cadastro autoplay muted playsinline></video>
+          <img data-foto-tirada-cadastro alt="Foto tirada" hidden>
+        </div>
+        <div class="face-actions" style="margin-top:0.8rem;">
+          <button type="button" class="btn btn-primary btn-block" data-tirar-foto-cadastro><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-4px; margin-right:4px;"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>Tirar foto</button>
+          <button type="button" class="btn btn-outline--light btn-block" data-tirar-outra-cadastro hidden>Tirar outra foto</button>
+        </div>
+      </div>
+
+      <div data-cadastro-painel="foto" class="verify-panel" hidden>
+        <label class="upload-area" data-upload-area-cadastro for="file-input-cadastro">
+          <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+          <p><strong>Clique para escolher uma foto</strong><br>com o rosto da pessoa bem visível</p>
+          <input id="file-input-cadastro" type="file" accept="image/*" data-file-input-cadastro hidden>
+        </label>
+        <div data-preview-wrap-cadastro class="upload-preview-wrap" hidden>
+          <img data-preview-cadastro class="upload-preview" alt="Prévia da foto">
+          <button type="button" class="upload-preview__remove" data-remove-cadastro aria-label="Remover foto">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div data-status-cadastro class="verify-status" hidden></div>
+      <input type="text" data-nome-input placeholder="Nome da pessoa (ex: minha filha Ana)" class="face-nome-input" maxlength="40">
+      <div class="face-actions">
+        <button type="button" class="btn btn-primary" data-capturar-btn>Salvar</button>
+        <button type="button" class="btn btn-outline--light" data-cancelar-cadastro>Cancelar</button>
+      </div>
+    </div>
+
+    <div class="verify-card">
+      <h2 class="face-section-title">2. Verificar agora</h2>
+      <p class="verify-hint" style="margin-top:0;">Aponte a câmera pro rosto da pessoa na chamada, ou envie uma foto (print da videochamada, foto de perfil), e compare com quem está cadastrado.</p>
+      <button type="button" class="btn btn-primary btn-block" data-abrir-verificacao>Comparar agora</button>
+
+      <div data-painel-verificacao hidden style="margin-top:1rem;">
+        <div class="verify-tabs">
+          <button type="button" class="verify-tab active" data-verificacao-tab="camera"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px; margin-right:3px;"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>Usar câmera</button>
+          <button type="button" class="verify-tab" data-verificacao-tab="foto">Enviar uma foto</button>
+        </div>
+
+        <div data-verificacao-painel="camera" class="verify-panel">
+          <div class="webcam-box">
+            <video data-video-verificar autoplay muted playsinline></video>
+            <img data-foto-tirada-verificar alt="Foto tirada" hidden>
+          </div>
+          <div class="face-actions" style="margin-top:0.8rem;">
+            <button type="button" class="btn btn-primary btn-block" data-tirar-foto-verificar><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-4px; margin-right:4px;"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>Tirar foto</button>
+            <button type="button" class="btn btn-outline--light btn-block" data-tirar-outra-verificar hidden>Tirar outra foto</button>
+          </div>
+        </div>
+
+        <div data-verificacao-painel="foto" class="verify-panel" hidden>
+          <label class="upload-area" data-upload-area-verificar for="file-input-verificar">
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+            <p><strong>Clique para escolher uma foto</strong><br>print da videochamada ou foto de perfil</p>
+            <input id="file-input-verificar" type="file" accept="image/*" data-file-input-verificar hidden>
+          </label>
+          <div data-preview-wrap-verificar class="upload-preview-wrap" hidden>
+            <img data-preview-verificar class="upload-preview" alt="Prévia da foto">
+            <button type="button" class="upload-preview__remove" data-remove-verificar aria-label="Remover foto">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="face-actions">
+          <button type="button" class="btn btn-primary" data-comparar-btn>Comparar agora</button>
+          <button type="button" class="btn btn-outline--light" data-fechar-verificacao>Fechar</button>
+        </div>
+      </div>
+
+      <div data-status-verificacao class="verify-status" hidden></div>
+      <div data-resultado-verificacao hidden></div>
+    </div>
+
+  </div>
+</main>
+
+<script src="face-api.min.js"></script>
+<script src="verificarRosto.js"></script>
+</body>
+</html>

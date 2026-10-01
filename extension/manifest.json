@@ -23,7 +23,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["tesseract/*"],
+      "resources": ["tesseract/*", "face-models/*"],
       "matches": ["<all_urls>"]
     }
   ]

@@ -193,5 +193,12 @@
     });
   }
 
+  const verificarRostoBtn = document.querySelector('[data-abrir-verificar-rosto]');
+  if (verificarRostoBtn) {
+    verificarRostoBtn.addEventListener('click', () => {
+      chrome.tabs.create({ url: chrome.runtime.getURL('verificar-rosto.html') });
+    });
+  }
+
   renderSituacao();
 })();

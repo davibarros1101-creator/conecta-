@@ -123,3 +123,40 @@ img { max-width: 100%; display: block; }
 .extracted-text { background: var(--ivory); border: 1px solid var(--line); border-radius: 10px; padding: 0.9rem 1rem; font-size: 0.9rem; color: var(--ink-soft); margin-top: 1.3rem; }
 .extracted-text summary { cursor: pointer; font-weight: 700; color: var(--ink); }
 .extracted-text p { margin: 0.6rem 0 0; white-space: pre-wrap; }
+
+.btn-outline--light { background: #fff; border: 2px solid var(--purple); color: var(--purple); }
+.btn-outline--light:hover { background: var(--purple); color: #fff; }
+
+/* ---------- Verificar rosto (webcam + face-api.js) ---------- */
+.face-disclaimer { margin: 0; font-size: 0.9rem; color: var(--ink-soft); line-height: 1.5; }
+.face-disclaimer strong { color: var(--ink); }
+.face-help { margin-top: 0.8rem; font-size: 0.85rem; }
+.face-help summary { cursor: pointer; color: var(--purple); font-weight: 600; }
+.face-help p { margin: 0.5rem 0 0; color: var(--ink-soft); }
+.face-section-title { margin: 0 0 1rem; font-size: 1.15rem; }
+.face-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 1rem; }
+.face-empty { color: var(--ink-soft); font-size: 0.9rem; margin: 0; grid-column: 1 / -1; }
+.face-card { position: relative; text-align: center; }
+.face-card img { width: 76px; height: 76px; border-radius: 50%; object-fit: cover; border: 2px solid var(--line); margin: 0 auto 0.4rem; display: block; }
+.face-card__nome { display: block; font-size: 0.8rem; font-weight: 600; word-break: break-word; cursor: pointer; }
+.face-card__nome:hover { text-decoration: underline; }
+.face-card__nome-input { width: 100%; font-size: 0.8rem; font-weight: 600; text-align: center; border: 1px solid var(--purple); border-radius: 6px; padding: 0.1rem 0.3rem; font-family: inherit; }
+.face-card__fotos { display: block; font-size: 0.68rem; color: var(--ink-soft); }
+.face-card__acoes { position: absolute; top: -4px; right: 4px; display: flex; gap: 0.25rem; }
+.face-card__excluir, .face-card__editar {
+  width: 24px; height: 24px; border-radius: 50%; border: 2px solid #fff;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.face-card__excluir { background: var(--red); color: #fff; }
+.face-card__editar { background: var(--purple); color: #fff; }
+.face-card__add-foto { display: block; width: 100%; margin-top: 0.3rem; background: none; border: none; color: var(--purple); font-size: 0.7rem; font-weight: 600; cursor: pointer; padding: 0.1rem; }
+.face-card__add-foto:hover { text-decoration: underline; }
+.face-list-actions { display: flex; gap: 0.6rem; margin-top: 1rem; }
+.face-list-actions .btn { flex: 1; }
+.webcam-box { background: var(--bg-dark); border-radius: 12px; overflow: hidden; aspect-ratio: 4 / 3; max-width: 360px; margin: 0 auto; }
+.webcam-box video { width: 100%; height: 100%; object-fit: cover; display: block; transform: scaleX(-1); }
+.webcam-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.face-nome-input { display: block; width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 0.7rem 0.9rem; font-family: inherit; font-size: 1rem; margin-top: 1rem; }
+.face-actions { display: flex; gap: 0.6rem; margin-top: 1rem; }
+.face-actions .btn { flex: 1; }
