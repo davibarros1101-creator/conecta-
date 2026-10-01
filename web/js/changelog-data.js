@@ -6,6 +6,12 @@
  */
 const CHANGELOG = [
   {
+    version: 'v16',
+    date: '2026-10-01',
+    title: 'Quiz de prática ampliado para 40 situações',
+    description: 'Adicionadas 26 novas situações com golpes atuais (PIX "por engano", código do WhatsApp, falsa multa de trânsito, falsa restituição de Imposto de Renda, investimento em criptomoeda, SIM swap, entre outros) e mais mensagens legítimas, totalizando 40 situações de prática.',
+  },
+  {
     version: 'v15',
     date: '2026-10-01',
     title: 'Verificar rosto na extensão, histórico unificado e compartilhar resultado',

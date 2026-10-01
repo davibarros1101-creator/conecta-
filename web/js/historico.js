@@ -60,7 +60,12 @@
   renderAtividade(container);
 
   function renderChart(wrap, dados) {
-    const MAX = 12;
+    // MAX é o total de perguntas do quiz (hoje 40) - calculado a partir dos
+    // dados em vez de fixo, porque tentativas antigas (de antes de o quiz
+    // crescer) podem ter um total diferente guardado no histórico.
+    const MAX = Math.max(...dados.map((d) => d.total), 1);
+    const passo = Math.max(1, Math.round(MAX / 4));
+    const valoresEixoY = [0, passo, passo * 2, passo * 3, MAX];
     const W = 640;
     const H = 260;
     const marginLeft = 32;
@@ -80,8 +85,8 @@
     svg.setAttribute('aria-label', 'Gráfico de barras mostrando sua pontuação em cada tentativa de prática');
     svg.classList.add('historico-chart');
 
-    // Gridlines + rótulos do eixo Y (0, 3, 6, 9, 12)
-    [0, 3, 6, 9, 12].forEach((val) => {
+    // Gridlines + rótulos do eixo Y, em 5 passos até o total do quiz
+    valoresEixoY.forEach((val) => {
       const y = marginTop + plotH - (val / MAX) * plotH;
       const line = document.createElementNS(svgNS, 'line');
       line.setAttribute('x1', marginLeft);

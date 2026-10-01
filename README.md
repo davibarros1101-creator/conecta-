@@ -67,7 +67,7 @@ O site é um PWA - em celular ou computador, o navegador oferece "Instalar app",
 ## Funcionalidades
 
 ### Praticar
-14 situações simuladas, uma por vez: observe a mensagem, decida se é golpe, veja a explicação. Tem botão de **ouvir a mensagem em voz alta** (usa a função de fala do próprio navegador), útil pra quem tem dificuldade de leitura na tela.
+40 situações simuladas, uma por vez: observe a mensagem, decida se é golpe, veja a explicação. Tem botão de **ouvir a mensagem em voz alta** (usa a função de fala do próprio navegador), útil pra quem tem dificuldade de leitura na tela.
 
 ### Verificar mensagem (OCR + detector de golpe/spam)
 Página `web/verificar.html`: a pessoa envia um print (foto de tela do WhatsApp, e-mail, SMS, ou qualquer imagem com texto) ou cola o texto direto. O OCR (Tesseract.js, roda 100% no navegador, a imagem não é enviada a nenhum servidor) lê o texto, e `web/js/scamDetector.js` analisa em busca de sinais reais de golpe (pedido de dinheiro, urgência, prêmio, pedido de senha/código, link suspeito, suporte técnico falso, PIX "por engano", investimento com lucro garantido, falsa vaga de emprego, falso sequestro, falsa central de cartão, boleto clonado, pedido de selfie/documento) e de spam (excesso de maiúsculas/exclamação, propaganda agressiva), classificando o risco em alto, atenção ou baixo, com explicação. Também reconhece quando a imagem parece um documento/conta oficial de verdade (código de barras, CNPJ, vencimento), com o cuidado de avisar que isso sozinho não garante que o beneficiário é o certo (golpe do boleto clonado).
@@ -78,7 +78,7 @@ A extensão também tem essa funcionalidade (`extension/verificar.html`, aberta 
 Página `web/verificar-rosto.html`: cadastre o rosto de uma pessoa de confiança (câmera ao vivo ou foto enviada) e, numa videochamada estranha, compare na hora se é realmente ela. Usa face-api.js (modelos carregados de CDN, processamento 100% local). Suporta mais de uma foto por pessoa (compara pela mais parecida), editar nome, excluir, e exportar/importar o cadastro em JSON. Deixa claro que é um apoio, não uma prova - a recomendação é sempre confirmar também por outro meio (ligação de voz).
 
 ### Meu progresso
-Página `web/historico.html`: gráfico simples mostrando a evolução da pontuação ao longo das tentativas, com comparação "primeira tentativa x mais recente" em texto, e uma tabela equivalente acessível logo abaixo do gráfico (pra leitor de tela). Útil pra medir aprendizado numa apresentação (ex.: "antes: 4 de 14, depois: 12 de 14").
+Página `web/historico.html`: gráfico simples mostrando a evolução da pontuação ao longo das tentativas, com comparação "primeira tentativa x mais recente" em texto, e uma tabela equivalente acessível logo abaixo do gráfico (pra leitor de tela). Útil pra medir aprendizado numa apresentação (ex.: "antes: 12 de 40, depois: 35 de 40").
 
 ### Acessibilidade
 Botão "A+" (todas as páginas) aumenta o texto e o contraste, com preferência salva. Base de fonte já maior que o padrão do navegador de propósito, pensando no público 60+.
@@ -101,7 +101,7 @@ Sino no canto da home mostra as últimas atualizações publicadas, escritas em 
 
 ## Conteúdo educativo
 
-14 situações simuladas: golpes reais (prêmio falso, banco falso, WhatsApp de familiar, funcionário de banco falso, link falso de encomenda, falso benefício, falso suporte técnico, golpe do amor, boleto clonado, pedido de selfie/documento) e mensagens legítimas, para treinar a pessoa a diferenciar. Responder sempre "é golpe" não garante nota máxima.
+40 situações simuladas: 29 golpes reais (prêmio falso, banco falso, WhatsApp de familiar, funcionário de banco falso, link falso de encomenda, falso benefício, falso suporte técnico, golpe do amor, boleto clonado, pedido de selfie/documento, PIX "por engano", falso emprego, código do WhatsApp, falsa multa, falsa restituição de IR, falso 13º/INSS, compra não reconhecida, doação falsa, falso leilão, QR code falso, investimento em cripto, SIM swap, assinatura de streaming falsa, emprego no exterior falso, empréstimo com taxa antecipada, recolhimento de cartão por motoboy, grupo de investimento, vale-presente falso, pesquisa paga falsa) e 11 mensagens legítimas, para treinar a pessoa a diferenciar. Responder sempre "é golpe" não garante nota máxima.
 
 O resultado de cada tentativa fica salvo no navegador (localStorage), sem enviar nada pra nenhum servidor.
 
