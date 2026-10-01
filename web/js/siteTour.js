@@ -102,7 +102,7 @@
       <div class="tour-tooltip__footer">
         <span>${stepIndex + 1} de ${activeSteps.length}</span>
         <div class="tour-tooltip__actions">
-          ${stepIndex > 0 ? '<button type="button" class="btn btn-outline" data-tour-prev>Voltar</button>' : ''}
+          ${stepIndex > 0 ? '<button type="button" class="btn btn-outline--light" data-tour-prev>Voltar</button>' : ''}
           <button type="button" class="btn btn-primary" data-tour-next>${stepIndex + 1 < activeSteps.length ? 'Próximo' : 'Concluir'}</button>
         </div>
       </div>
