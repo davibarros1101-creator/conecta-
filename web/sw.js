@@ -4,7 +4,7 @@
  * quem já visitou o site continuar vendo uma versão antiga depois de uma
  * atualização.
  */
-const CACHE_VERSION = 'conecta-mais-v19';
+const CACHE_VERSION = 'conecta-mais-v20';
 const PRECACHE_URLS = [
   'index.html',
   'praticar.html',
@@ -23,6 +23,7 @@ const PRECACHE_URLS = [
   'js/changelog.js',
   'js/historico.js',
   'js/acessibilidade.js',
+  'js/atividade.js',
   'assets/scenarios.js',
   'assets/icon-128.png',
   'assets/icon-192.png',

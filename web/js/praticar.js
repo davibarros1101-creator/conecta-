@@ -227,6 +227,7 @@
     const tentativaAnterior = historicoAnterior[historicoAnterior.length - 1] || null;
 
     salvarHistorico({ data: new Date().toISOString(), acertos, total });
+    if (typeof registrarAtividade === 'function') registrarAtividade('pratica', { acertos, total });
 
     progressFill.style.width = '100%';
     progressLabel.textContent = 'Concluído!';

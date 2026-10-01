@@ -763,6 +763,14 @@ body.tour-active { overflow: hidden; }
 .historico-table th, .historico-table td { text-align: left; padding: 0.55rem 0.7rem; border-bottom: 1px solid var(--line); }
 .historico-table th { color: var(--ink-soft); font-weight: 600; font-size: 0.78rem; }
 
+/* ---------- Atividade recente (historico.html) ---------- */
+.atividade-lista { display: grid; gap: 0.8rem; margin-top: 1rem; }
+.atividade-item { display: flex; align-items: flex-start; gap: 0.8rem; padding: 0.8rem; background: var(--ivory); border-radius: 10px; }
+.atividade-item__icone { flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; background: #fff; border: 1px solid var(--line); color: var(--purple); display: flex; align-items: center; justify-content: center; }
+.atividade-item strong { display: block; font-size: 0.92rem; }
+.atividade-item__detalhe { display: block; font-size: 0.88rem; color: var(--ink-soft); }
+.atividade-item__data { display: block; font-size: 0.75rem; color: var(--ink-soft); margin-top: 0.15rem; }
+
 /* ---------- Botão de acessibilidade (texto maior + contraste) ---------- */
 .a11y-toggle {
   position: fixed;

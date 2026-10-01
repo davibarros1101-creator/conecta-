@@ -6,6 +6,12 @@
  */
 const CHANGELOG = [
   {
+    version: 'v15',
+    date: '2026-10-01',
+    title: 'Verificar rosto na extensão, histórico unificado e compartilhar resultado',
+    description: 'A extensão agora também tem Verificar rosto (câmera ou foto), igual ao site. "Meu progresso" ganhou uma seção "Atividade recente" mostrando prática, verificações de mensagem e de rosto numa linha do tempo só (sem guardar o conteúdo analisado, só o resultado). E depois de verificar uma mensagem ou um rosto, dá pra compartilhar o resultado com alguém de confiança (WhatsApp ou outro app).',
+  },
+  {
     version: 'v14',
     date: '2026-09-30',
     title: 'Corrigido: botões invisíveis na página Verificar rosto',

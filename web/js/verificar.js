@@ -9,6 +9,19 @@
   const ICON_ALERT_OCTAGON = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>';
   const ICON_FLAG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>';
   const ICON_MEGAPHONE = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 11 18-5v12L3 13v-2z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>';
+  const ICON_SHARE = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px; margin-right:3px;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>';
+
+  // Compartilha só o resultado/classificação (nunca o texto da mensagem
+  // analisada) - via menu nativo de compartilhar quando existe, ou um link
+  // de WhatsApp como alternativa.
+  function compartilharResultado(titulo, descricao) {
+    const texto = `Verifiquei uma mensagem suspeita no Conecta+ e o resultado foi: "${titulo}". ${descricao}\n\nVocê também pode verificar mensagens suspeitas: https://conecta-mais-theta.vercel.app/verificar.html`;
+    if (navigator.share) {
+      navigator.share({ text: texto }).catch(() => {});
+    } else {
+      window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank');
+    }
+  }
 
   const tabs = document.querySelectorAll('[data-tab]');
   const panels = document.querySelectorAll('[data-panel]');
@@ -160,10 +173,22 @@
         <p class="result-risk__desc">${descPorRisco[resultado.riscoGolpe]}</p>
         ${spamHtml}
         ${sinaisHtml}
+        <button type="button" class="btn btn-outline--light" data-compartilhar-btn style="margin-top:0.5rem;">${ICON_SHARE} Compartilhar resultado</button>
       </div>
       ${textoHtml}
     `;
     resultadoEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    if (typeof registrarAtividade === 'function') {
+      registrarAtividade('mensagem', { risco: resultado.riscoGolpe, documentoOficial: resultado.pareceDocumentoOficial, spam: resultado.possivelSpam });
+    }
+
+    const compartilharBtn = resultadoEl.querySelector('[data-compartilhar-btn]');
+    if (compartilharBtn) {
+      compartilharBtn.addEventListener('click', () => {
+        compartilharResultado(config.titulo, descPorRisco[resultado.riscoGolpe]);
+      });
+    }
   }
 
   analisarBtn.addEventListener('click', async () => {

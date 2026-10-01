@@ -68,6 +68,7 @@
   const ICON_CHECK = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>';
   const ICON_ALERT = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>';
   const ICON_TRASH = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+  const ICON_SHARE = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px; margin-right:3px;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>';
   const ICON_EDIT = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
 
   function esc(s) {
@@ -511,6 +512,7 @@
         <div class="result-risk result-risk--baixo">
           <p class="result-risk__title">${ICON_CHECK} Parece ser ${esc(melhor.nome)}</p>
           <p class="result-risk__desc">O rosto bateu com o cadastro de "${esc(melhor.nome)}" (${confianca}% de semelhança). Mesmo assim, isso é só um apoio: se a conversa envolve pedido de dinheiro urgente, confirme também por outro meio, como uma ligação de voz pro número que você já conhece.</p>
+          <button type="button" class="btn btn-outline--light" data-compartilhar-btn style="margin-top:0.5rem;">${ICON_SHARE} Compartilhar resultado</button>
         </div>
       `;
     } else {
@@ -518,10 +520,29 @@
         <div class="result-risk result-risk--alto">
           <p class="result-risk__title">${ICON_ALERT} Não bateu com nenhum rosto cadastrado</p>
           <p class="result-risk__desc">Esse rosto não corresponde a nenhuma pessoa de confiança que você cadastrou. Desconfie, principalmente se a pessoa está pedindo dinheiro, dados ou algo urgente. Antes de agir, confirme por outro meio, como uma ligação de voz direto pro número que você já conhece.</p>
+          <button type="button" class="btn btn-outline--light" data-compartilhar-btn style="margin-top:0.5rem;">${ICON_SHARE} Compartilhar resultado</button>
         </div>
       `;
     }
     resultadoVerificacaoEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    const bateu = Boolean(melhor && distancia < LIMIAR_MESMA_PESSOA);
+    if (typeof registrarAtividade === 'function') {
+      registrarAtividade('rosto', { bateu });
+    }
+    const compartilharBtn = resultadoVerificacaoEl.querySelector('[data-compartilhar-btn]');
+    if (compartilharBtn) {
+      compartilharBtn.addEventListener('click', () => {
+        const texto = bateu
+          ? `Verifiquei um rosto numa videochamada pelo Conecta+ e bateu com "${melhor.nome}", quem eu já tinha cadastrado como pessoa de confiança.\n\nVocê também pode verificar: https://conecta-mais-theta.vercel.app/verificar-rosto.html`
+          : `Verifiquei um rosto numa videochamada pelo Conecta+ e NÃO bateu com nenhuma pessoa de confiança que eu tinha cadastrado. Fiquei desconfiado(a).\n\nVocê também pode verificar: https://conecta-mais-theta.vercel.app/verificar-rosto.html`;
+        if (navigator.share) {
+          navigator.share({ text: texto }).catch(() => {});
+        } else {
+          window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank');
+        }
+      });
+    }
   }
 
   compararBtn.addEventListener('click', async () => {

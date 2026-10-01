@@ -9,6 +9,10 @@
   const container = document.querySelector('[data-conteudo]');
   if (!container) return;
 
+  const ICON_PRATICA = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>';
+  const ICON_MENSAGEM = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>';
+  const ICON_ROSTO = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>';
+
   function lerHistorico() {
     try { return JSON.parse(localStorage.getItem(HISTORICO_KEY) || '[]'); } catch { return []; }
   }
@@ -26,6 +30,7 @@
         <a class="btn btn-primary" href="praticar.html">Começar a praticar</a>
       </div>
     `;
+    renderAtividade(container);
     return;
   }
 
@@ -52,6 +57,7 @@
   `;
 
   renderChart(document.querySelector('[data-chart-wrap]'), historico);
+  renderAtividade(container);
 
   function renderChart(wrap, dados) {
     const MAX = 12;
@@ -178,5 +184,57 @@
 
   function esc(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function fmtDataHora(iso) {
+    try {
+      const d = new Date(iso);
+      return `${d.toLocaleDateString('pt-BR')} às ${d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+    } catch { return ''; }
+  }
+
+  function descreverAtividade(item) {
+    if (item.tipo === 'pratica') {
+      return { icone: ICON_PRATICA, titulo: 'Praticou', detalhe: `${item.resumo.acertos} de ${item.resumo.total} acertos` };
+    }
+    if (item.tipo === 'mensagem') {
+      const rotulo = item.resumo.documentoOficial
+        ? 'parecia documento oficial'
+        : { alto: 'sinais fortes de golpe', atencao: 'alguns sinais de atenção', baixo: 'sem sinais claros de golpe' }[item.resumo.risco] || '';
+      return { icone: ICON_MENSAGEM, titulo: 'Verificou uma mensagem', detalhe: rotulo };
+    }
+    if (item.tipo === 'rosto') {
+      return { icone: ICON_ROSTO, titulo: 'Verificou um rosto', detalhe: item.resumo.bateu ? 'bateu com um rosto cadastrado' : 'não bateu com nenhum rosto cadastrado' };
+    }
+    return { icone: '', titulo: 'Atividade', detalhe: '' };
+  }
+
+  function renderAtividade(container) {
+    if (typeof lerAtividades !== 'function') return;
+    const atividades = lerAtividades().slice().reverse();
+    if (!atividades.length) return;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'scenario-card';
+    wrap.style.marginTop = '1.5rem';
+    wrap.innerHTML = `
+      <h2 style="margin-top:0; font-size:1.2rem;">Atividade recente</h2>
+      <div class="atividade-lista">
+        ${atividades.map((item) => {
+          const { icone, titulo, detalhe } = descreverAtividade(item);
+          return `
+            <div class="atividade-item">
+              <span class="atividade-item__icone">${icone}</span>
+              <div>
+                <strong>${esc(titulo)}</strong>
+                <span class="atividade-item__detalhe">${esc(detalhe)}</span>
+                <span class="atividade-item__data">${esc(fmtDataHora(item.data))}</span>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+    container.appendChild(wrap);
   }
 })();
