@@ -93,8 +93,8 @@ a { color: inherit; }
 .btn-primary { background: var(--gradient); color: #fff; box-shadow: 0 10px 25px -10px rgba(124,92,255,0.6); }
 .btn-outline { background: transparent; border-color: rgba(255,255,255,0.5); color: #fff; }
 .btn-outline:hover { background: rgba(255,255,255,0.1); }
-.btn-outline--light { border-color: var(--ink); color: var(--ink); }
-.btn-outline--light:hover { background: var(--ink); color: #fff; }
+.btn-outline--light { background: #fff; border-color: var(--purple); color: var(--purple); }
+.btn-outline--light:hover { background: var(--purple); color: #fff; }
 .btn-block { width: 100%; }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
