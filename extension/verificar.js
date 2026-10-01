@@ -154,7 +154,7 @@
       alto: 'Essa mensagem tem várias características comuns em golpes. Não clique em links, não pague nada e não informe dados antes de confirmar por outro meio (ligue direto pro número oficial da empresa, por exemplo).',
       atencao: 'Encontramos pelo menos um sinal que merece atenção. Não é certeza de golpe, mas vale desconfiar e confirmar antes de agir.',
       baixo: resultado.pareceDocumentoOficial
-        ? 'Essa imagem tem características de um boleto ou conta de verdade (código de barras, linha digitável, CNPJ ou vencimento) e não tem nenhum sinal comum de golpe. Mesmo assim, se tiver qualquer dúvida, confira o valor e os dados direto no aplicativo oficial da empresa.'
+        ? 'Essa imagem tem características de um boleto ou conta de verdade (código de barras, linha digitável, CNPJ ou vencimento) e não tem nenhum sinal comum de golpe. Mas atenção: existe o golpe do "boleto clonado", em que o golpista copia a conta de luz, água ou outra empresa e troca só o código de barras e o beneficiário, pra receber o pagamento na conta dele. Antes de pagar, confira se o nome da empresa no código de barras é mesmo o da concessionária, e se o boleto tem a parte de baixo completa (código de barras e opção de débito automático) igual aos boletos anteriores.'
         : 'Não identificamos os sinais mais comuns de golpe nessa mensagem. Mesmo assim, sempre desconfie de pedidos de dinheiro ou de dados pessoais.',
     };
 
